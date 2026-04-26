@@ -79,7 +79,7 @@
                     <td><?php echo html_escape($row['tgl_mulai']); ?> s/d <?php echo html_escape($row['tgl_selesai']); ?></td>
                     <td><?php echo html_escape($row['alasan']); ?></td>
                     <td>
-                      <strong><?php echo html_escape($status_map[$row['status']] ?? $row['status']); ?></strong>
+                      <strong><?php echo html_escape(isset($status_map[$row['status']]) ? $status_map[$row['status']] : $row['status']); ?></strong>
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm" role="group">
@@ -130,7 +130,7 @@
 </div>
 
 <div class="d-flex justify-content-end mt-2">
-  <?php echo $pagination ?? ''; ?>
+  <?php echo isset($pagination) ? $pagination : ''; ?>
 </div>
 
 <script>

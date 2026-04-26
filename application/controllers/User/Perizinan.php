@@ -384,9 +384,9 @@ class Perizinan extends MY_Controller
 
     private function get_surat_filename(array $izin)
     {
-        $nama = $this->slugify_filename_part($izin['nama'] ?? 'nama');
-        $nim = $this->slugify_filename_part($izin['nim'] ?? 'nim');
-        $tanggal = $this->format_filename_date($izin['tgl_mulai'] ?? ($izin['tgl_ajuan'] ?? date('Y-m-d')));
+        $nama = $this->slugify_filename_part(isset($izin['nama']) ? $izin['nama'] : 'nama');
+        $nim = $this->slugify_filename_part(isset($izin['nim']) ? $izin['nim'] : 'nim');
+        $tanggal = $this->format_filename_date(isset($izin['tgl_mulai']) ? $izin['tgl_mulai'] : (isset($izin['tgl_ajuan']) ? $izin['tgl_ajuan'] : date('Y-m-d')));
 
         return $nama . '_' . $nim . '_SuratIzin_' . $tanggal . '.pdf';
     }

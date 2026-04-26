@@ -20,7 +20,7 @@ class Dashboard extends MY_Controller
         }
 
         $profile = $this->User_model->get_profile_by_nim($auth['nim']);
-        if (!empty($profile['nama']) && $profile['nama'] !== ($auth['display_name'] ?? '')) {
+        if (!empty($profile['nama']) && $profile['nama'] !== (isset($auth['display_name']) ? $auth['display_name'] : '')) {
             $auth['display_name'] = $profile['nama'];
             $this->set_login_session($auth);
         }

@@ -115,8 +115,8 @@ class User_model extends CI_Model
         $this->db->where('u.role', 'user');
 
         $row = $this->db->get()->row_array();
-        $total = (int) ($row['total_santri'] ?? 0);
-        $izin = (int) ($row['total_izin'] ?? 0);
+        $total = isset($row['total_santri']) ? (int) $row['total_santri'] : 0;
+        $izin = isset($row['total_izin']) ? (int) $row['total_izin'] : 0;
 
         return array(
             'total_santri' => $total,

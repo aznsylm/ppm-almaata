@@ -53,8 +53,8 @@ $hasActiveFilter = !empty($filters['prodi']) || !empty($filters['lantai']) || !e
         <label>Prodi</label>
         <select name="prodi" class="form-control">
           <option value="">Semua Prodi</option>
-          <?php foreach (($filter_options['prodi'] ?? array()) as $prodi): ?>
-            <option value="<?php echo html_escape($prodi); ?>" <?php echo (($filters['prodi'] ?? '') === $prodi) ? 'selected' : ''; ?>><?php echo html_escape($prodi); ?></option>
+          <?php foreach ((isset($filter_options['prodi']) ? $filter_options['prodi'] : array()) as $prodi): ?>
+            <option value="<?php echo html_escape($prodi); ?>" <?php echo ((isset($filters['prodi']) ? $filters['prodi'] : '') === $prodi) ? 'selected' : ''; ?>><?php echo html_escape($prodi); ?></option>
           <?php endforeach; ?>
         </select>
       </div>
@@ -62,23 +62,23 @@ $hasActiveFilter = !empty($filters['prodi']) || !empty($filters['lantai']) || !e
         <label>Lantai</label>
         <select name="lantai" class="form-control">
           <option value="">Semua Lantai</option>
-          <option value="1" <?php echo (($filters['lantai'] ?? '') === '1') ? 'selected' : ''; ?>>Lantai 1</option>
-          <option value="2" <?php echo (($filters['lantai'] ?? '') === '2') ? 'selected' : ''; ?>>Lantai 2</option>
-          <option value="3" <?php echo (($filters['lantai'] ?? '') === '3') ? 'selected' : ''; ?>>Lantai 3</option>
+          <option value="1" <?php echo ((isset($filters['lantai']) ? $filters['lantai'] : '') === '1') ? 'selected' : ''; ?>>Lantai 1</option>
+          <option value="2" <?php echo ((isset($filters['lantai']) ? $filters['lantai'] : '') === '2') ? 'selected' : ''; ?>>Lantai 2</option>
+          <option value="3" <?php echo ((isset($filters['lantai']) ? $filters['lantai'] : '') === '3') ? 'selected' : ''; ?>>Lantai 3</option>
         </select>
       </div>
       <div class="form-group col-md-2">
         <label>Angkatan</label>
         <select name="angkatan" class="form-control">
           <option value="">Semua Angkatan</option>
-          <?php foreach (($filter_options['angkatan'] ?? array()) as $angkatan): ?>
-            <option value="<?php echo html_escape($angkatan); ?>" <?php echo (($filters['angkatan'] ?? '') === $angkatan) ? 'selected' : ''; ?>><?php echo html_escape($angkatan); ?></option>
+          <?php foreach ((isset($filter_options['angkatan']) ? $filter_options['angkatan'] : array()) as $angkatan): ?>
+            <option value="<?php echo html_escape($angkatan); ?>" <?php echo ((isset($filters['angkatan']) ? $filters['angkatan'] : '') === $angkatan) ? 'selected' : ''; ?>><?php echo html_escape($angkatan); ?></option>
           <?php endforeach; ?>
         </select>
       </div>
       <div class="form-group col-md-3">
         <label>Search (NIM/Nama/Alamat)</label>
-        <input type="text" name="q" class="form-control" value="<?php echo html_escape($filters['q'] ?? ''); ?>" placeholder="Ketik kata kunci...">
+        <input type="text" name="q" class="form-control" value="<?php echo html_escape(isset($filters['q']) ? $filters['q'] : ''); ?>" placeholder="Ketik kata kunci...">
       </div>
       <div class="form-group col-md-2 d-flex align-items-end">
         <button type="submit" class="btn btn-primary btn-block mr-2">Filter</button>
@@ -108,7 +108,7 @@ $hasActiveFilter = !empty($filters['prodi']) || !empty($filters['lantai']) || !e
         <tr><td colspan="8" class="text-center text-muted py-4">Belum ada data santri.</td></tr>
       <?php else: ?>
         <?php foreach ($rows as $idx => $row): ?>
-          <?php $no = (int) ($pagination['offset'] ?? 0) + (int) $idx + 1; ?>
+          <?php $no = (int) (isset($pagination['offset']) ? $pagination['offset'] : 0) + (int) $idx + 1; ?>
           <tr>
             <td><?php echo $no; ?></td>
             <td class="font-weight-bold"><?php echo html_escape($row['nim']); ?></td>
@@ -119,7 +119,7 @@ $hasActiveFilter = !empty($filters['prodi']) || !empty($filters['lantai']) || !e
                 <input type="text" name="kamar" class="form-control form-control-sm mr-2" value="<?php echo html_escape($row['kamar']); ?>" maxlength="20" required>
             </td>
             <td>
-              <strong><?php echo html_escape($row['status'] ?? 'Aktif'); ?></strong>
+              <strong><?php echo html_escape(isset($row['status']) ? $row['status'] : 'Aktif'); ?></strong>
             </td>
             <td><?php echo html_escape($row['prodi']); ?></td>
             <td class="small text-muted"><?php echo html_escape($row['alamat']); ?></td>
@@ -138,11 +138,11 @@ $hasActiveFilter = !empty($filters['prodi']) || !empty($filters['lantai']) || !e
   </table>
 </div>
 
-<?php if (($pagination['total_pages'] ?? 1) > 1): ?>
+<?php if ((isset($pagination['total_pages']) ? $pagination['total_pages'] : 1) > 1): ?>
   <?php
-    $queryBase = $pagination['query_base'] ?? array();
-    $currentPage = (int) ($pagination['page'] ?? 1);
-    $totalPages = (int) ($pagination['total_pages'] ?? 1);
+    $queryBase = isset($pagination['query_base']) ? $pagination['query_base'] : array();
+    $currentPage = (int) (isset($pagination['page']) ? $pagination['page'] : 1);
+    $totalPages = (int) (isset($pagination['total_pages']) ? $pagination['total_pages'] : 1);
     $buildUrl = function($p) use ($queryBase) {
       $query = array_merge($queryBase, array('page' => $p));
       return site_url('admin/santri') . '?' . http_build_query($query);

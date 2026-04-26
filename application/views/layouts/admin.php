@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?php echo html_escape($page_title ?? 'PPM Alma Ata'); ?></title>
+  <title><?php echo html_escape(!empty($page_title) ? $page_title : 'PPM Alma Ata'); ?></title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
@@ -51,13 +51,13 @@ if (!empty($authUser) && $authUser['role'] === 'admin') {
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <span class="nav-link font-weight-bold"><?php echo html_escape($page_title ?? 'PPM Alma Ata'); ?></span>
+        <span class="nav-link font-weight-bold"><?php echo html_escape(!empty($page_title) ? $page_title : 'PPM Alma Ata'); ?></span>
       </li>
     </ul>
 
     <ul class="navbar-nav ml-auto">
       <li class="nav-item d-none d-sm-inline-block">
-        <span class="nav-link text-muted"><?php echo html_escape($authUser['display_name'] ?? 'Guest'); ?></span>
+        <span class="nav-link text-muted"><?php echo html_escape(!empty($authUser['display_name']) ? $authUser['display_name'] : 'Guest'); ?></span>
       </li>
       <li class="nav-item">
         <a class="nav-link text-danger" href="<?php echo site_url('auth/logout'); ?>"><i class="fas fa-sign-out-alt mr-1"></i>Logout</a>
@@ -90,7 +90,7 @@ if (!empty($authUser) && $authUser['role'] === 'admin') {
   <div class="content-wrapper">
     <div class="content-header">
       <div class="container-fluid">
-        <h1 class="m-0 text-dark"><?php echo html_escape($page_title ?? 'PPM Alma Ata'); ?></h1>
+        <h1 class="m-0 text-dark"><?php echo html_escape(!empty($page_title) ? $page_title : 'PPM Alma Ata'); ?></h1>
       </div>
     </div>
 

@@ -15,7 +15,7 @@ $d = static function ($date) {
   return $ts ? date('d-m-Y', $ts) : '-';
 };
 
-$jkKode = strtoupper((string) ($profile['jenis_kelamin_kode'] ?? ''));
+$jkKode = strtoupper((string) (isset($profile['jenis_kelamin_kode']) ? $profile['jenis_kelamin_kode'] : ''));
 $jenisKelamin = '-';
 if ($jkKode === 'L') {
   $jenisKelamin = 'Laki-laki';
@@ -62,7 +62,7 @@ if (isset($profile['acc_izin_terakhir'])) {
     <div class="card shadow-sm h-100">
       <div class="card-body">
         <div class="text-xs font-weight-bold text-uppercase mb-2">NIM</div>
-        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v($profile['nim'] ?? NULL)); ?></div>
+        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v(isset($profile['nim']) ? $profile['nim'] : NULL)); ?></div>
       </div>
     </div>
   </div>
@@ -70,7 +70,7 @@ if (isset($profile['acc_izin_terakhir'])) {
     <div class="card shadow-sm h-100">
       <div class="card-body">
         <div class="text-xs font-weight-bold text-uppercase mb-2">Nama</div>
-        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v($profile['nama'] ?? NULL)); ?></div>
+        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v(isset($profile['nama']) ? $profile['nama'] : NULL)); ?></div>
       </div>
     </div>
   </div>
@@ -78,7 +78,7 @@ if (isset($profile['acc_izin_terakhir'])) {
     <div class="card shadow-sm h-100">
       <div class="card-body">
         <div class="text-xs font-weight-bold text-uppercase mb-2">Prodi</div>
-        <div class="h6 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v($profile['prodi'] ?? NULL)); ?></div>
+        <div class="h6 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v(isset($profile['prodi']) ? $profile['prodi'] : NULL)); ?></div>
       </div>
     </div>
   </div>
@@ -86,7 +86,7 @@ if (isset($profile['acc_izin_terakhir'])) {
     <div class="card shadow-sm h-100">
       <div class="card-body">
         <div class="text-xs font-weight-bold text-uppercase mb-2">Kamar</div>
-        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v($profile['kamar'] ?? NULL)); ?></div>
+        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v(isset($profile['kamar']) ? $profile['kamar'] : NULL)); ?></div>
       </div>
     </div>
   </div>
@@ -104,7 +104,7 @@ if (isset($profile['acc_izin_terakhir'])) {
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">Periode Izin Aktif</div>
-            <div class="font-weight-bold"><?php echo html_escape($d($profile['izin_aktif_mulai'] ?? NULL)); ?> s/d <?php echo html_escape($d($profile['izin_aktif_selesai'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($d(isset($profile['izin_aktif_mulai']) ? $profile['izin_aktif_mulai'] : NULL)); ?> s/d <?php echo html_escape($d(isset($profile['izin_aktif_selesai']) ? $profile['izin_aktif_selesai'] : NULL)); ?></div>
           </div>
         </div>
       </div>
@@ -117,11 +117,11 @@ if (isset($profile['acc_izin_terakhir'])) {
       <div class="card-body">
         <div class="mb-3">
           <div class="small-text">Total Pengajuan</div>
-          <div class="h4 font-weight-bold mb-0"><?php echo (int) ($profile['total_izin'] ?? 0); ?></div>
+          <div class="h4 font-weight-bold mb-0"><?php echo (int) (isset($profile['total_izin']) ? $profile['total_izin'] : 0); ?></div>
         </div>
         <div class="mb-2">
           <div class="small-text">Pengajuan Terakhir</div>
-          <div class="font-weight-bold"><?php echo html_escape($d($profile['tanggal_izin_terakhir'] ?? NULL)); ?></div>
+          <div class="font-weight-bold"><?php echo html_escape($d(isset($profile['tanggal_izin_terakhir']) ? $profile['tanggal_izin_terakhir'] : NULL)); ?></div>
         </div>
         <div>
           <div class="small-text">Status Terakhir</div>
@@ -140,19 +140,19 @@ if (isset($profile['acc_izin_terakhir'])) {
         <div class="row">
           <div class="col-md-6 mb-3">
             <div class="small-text">Angkatan</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['angkatan'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['angkatan']) ? $profile['angkatan'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">Semester Masuk</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['semester_masuk'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['semester_masuk']) ? $profile['semester_masuk'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">Status Mahasiswa</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['status_mahasiswa'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['status_mahasiswa']) ? $profile['status_mahasiswa'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">Jenjang / Kode Prodi</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['jenjang_kode'] ?? NULL)); ?> / <?php echo html_escape($v($profile['prodi_kode'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['jenjang_kode']) ? $profile['jenjang_kode'] : NULL)); ?> / <?php echo html_escape($v(isset($profile['prodi_kode']) ? $profile['prodi_kode'] : NULL)); ?></div>
           </div>
         </div>
       </div>
@@ -166,7 +166,7 @@ if (isset($profile['acc_izin_terakhir'])) {
         <div class="row">
           <div class="col-md-6 mb-3">
             <div class="small-text">Tempat, Tanggal Lahir</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['tempat_lahir'] ?? NULL)); ?>, <?php echo html_escape($d($profile['tanggal_lahir'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['tempat_lahir']) ? $profile['tempat_lahir'] : NULL)); ?>, <?php echo html_escape($d(isset($profile['tanggal_lahir']) ? $profile['tanggal_lahir'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">Jenis Kelamin</div>
@@ -174,19 +174,19 @@ if (isset($profile['acc_izin_terakhir'])) {
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">Agama</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['agama'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['agama']) ? $profile['agama'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">Golongan Darah</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['golongan_darah'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['golongan_darah']) ? $profile['golongan_darah'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">Tinggi Badan</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['tinggi_badan'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['tinggi_badan']) ? $profile['tinggi_badan'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">Berat Badan</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['berat_badan'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['berat_badan']) ? $profile['berat_badan'] : NULL)); ?></div>
           </div>
         </div>
       </div>
@@ -202,19 +202,19 @@ if (isset($profile['acc_izin_terakhir'])) {
         <div class="row">
           <div class="col-md-6 mb-3">
             <div class="small-text">Email Kampus</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['email_kampus'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['email_kampus']) ? $profile['email_kampus'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">Email Akun</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['email'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['email']) ? $profile['email'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">No HP</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['no_hp'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['no_hp']) ? $profile['no_hp'] : NULL)); ?></div>
           </div>
           <div class="col-md-12 mb-3">
             <div class="small-text">Alamat</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['alamat'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['alamat']) ? $profile['alamat'] : NULL)); ?></div>
           </div>
         </div>
       </div>
@@ -228,27 +228,27 @@ if (isset($profile['acc_izin_terakhir'])) {
         <div class="row">
           <div class="col-md-6 mb-3">
             <div class="small-text">Nama Ortu/Wali</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['nama_ortu_wali'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['nama_ortu_wali']) ? $profile['nama_ortu_wali'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
             <div class="small-text">Telp Ortu/Wali</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['telp_ortu_wali'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['telp_ortu_wali']) ? $profile['telp_ortu_wali'] : NULL)); ?></div>
           </div>
           <div class="col-md-12 mb-3">
             <div class="small-text">Pekerjaan Ortu/Wali</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['pekerjaan_ortu_wali'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['pekerjaan_ortu_wali']) ? $profile['pekerjaan_ortu_wali'] : NULL)); ?></div>
           </div>
           <div class="col-md-8 mb-3">
             <div class="small-text">Sekolah Asal</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['nama_sekolah'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['nama_sekolah']) ? $profile['nama_sekolah'] : NULL)); ?></div>
           </div>
           <div class="col-md-4 mb-3">
             <div class="small-text">Tahun Lulus</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['tahun_lulus'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['tahun_lulus']) ? $profile['tahun_lulus'] : NULL)); ?></div>
           </div>
           <div class="col-md-12">
             <div class="small-text">Jenjang Sekolah</div>
-            <div class="font-weight-bold"><?php echo html_escape($v($profile['pendidikan_sekolah'] ?? NULL)); ?></div>
+            <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['pendidikan_sekolah']) ? $profile['pendidikan_sekolah'] : NULL)); ?></div>
           </div>
         </div>
       </div>

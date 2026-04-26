@@ -13,7 +13,7 @@
     <div class="card shadow-sm h-100">
       <div class="card-body">
         <div class="small-text">Santri Aktif Saat Ini</div>
-        <div class="h4 mb-0 font-weight-bold"><?php echo (int) (($status_summary['total_aktif'] ?? 0)); ?></div>
+        <div class="h4 mb-0 font-weight-bold"><?php echo (int) (isset($status_summary['total_aktif']) ? $status_summary['total_aktif'] : 0); ?></div>
       </div>
     </div>
   </div>
@@ -21,7 +21,7 @@
     <div class="card shadow-sm h-100">
       <div class="card-body">
         <div class="small-text">Santri Sedang Izin Saat Ini</div>
-        <div class="h4 mb-0 font-weight-bold"><?php echo (int) (($status_summary['total_izin'] ?? 0)); ?></div>
+        <div class="h4 mb-0 font-weight-bold"><?php echo (int) (isset($status_summary['total_izin']) ? $status_summary['total_izin'] : 0); ?></div>
       </div>
     </div>
   </div>
@@ -32,14 +32,14 @@
     <div class="form-row align-items-end">
       <div class="col-md-5 mb-2">
         <label class="small mb-1">Search NIM / Nama</label>
-        <input type="text" name="q" class="form-control" value="<?php echo html_escape($filters['q'] ?? ''); ?>" placeholder="Cari NIM atau nama">
+        <input type="text" name="q" class="form-control" value="<?php echo html_escape(isset($filters['q']) ? $filters['q'] : ''); ?>" placeholder="Cari NIM atau nama">
       </div>
       <div class="col-md-4 mb-2">
         <label class="small mb-1">Filter Status</label>
         <select name="status" class="form-control">
           <option value="">Semua Status</option>
           <?php foreach ($status_map as $key => $label): ?>
-            <option value="<?php echo html_escape($key); ?>" <?php echo ((string) ($selected_status ?? '') === (string) $key) ? 'selected' : ''; ?>><?php echo html_escape($label); ?></option>
+            <option value="<?php echo html_escape($key); ?>" <?php echo ((string) (isset($selected_status) ? $selected_status : '') === (string) $key) ? 'selected' : ''; ?>><?php echo html_escape($label); ?></option>
           <?php endforeach; ?>
         </select>
       </div>
@@ -54,9 +54,9 @@
 
 <form id="bulk_delete_form" method="post" action="<?php echo site_url('admin/perizinan/delete-selected'); ?>" onsubmit="return confirm('Hapus data yang dipilih?');">
   <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
-  <input type="hidden" name="q" value="<?php echo html_escape($filters['q'] ?? ''); ?>">
-  <input type="hidden" name="status" value="<?php echo html_escape($selected_status ?? ''); ?>">
-  <input type="hidden" name="page" value="<?php echo html_escape($_GET['page'] ?? ''); ?>">
+  <input type="hidden" name="q" value="<?php echo html_escape(isset($filters['q']) ? $filters['q'] : ''); ?>">
+  <input type="hidden" name="status" value="<?php echo html_escape(isset($selected_status) ? $selected_status : ''); ?>">
+  <input type="hidden" name="page" value="<?php echo html_escape(isset($_GET['page']) ? $_GET['page'] : ''); ?>">
 </form>
 
 <div class="card shadow-sm">
@@ -88,7 +88,7 @@
                 <td><?php echo html_escape($row['nama']); ?></td>
                 <td><?php echo html_escape($row['tgl_mulai']); ?> s/d <?php echo html_escape($row['tgl_selesai']); ?></td>
                 <td><?php echo html_escape($row['alasan']); ?></td>
-                <td><strong><?php echo html_escape($status_map[$row['status']] ?? $row['status']); ?></strong></td>
+                <td><strong><?php echo html_escape(isset($status_map[$row['status']]) ? $status_map[$row['status']] : $row['status']); ?></strong></td>
                 <td>
                   <?php if ($row['file_upload']): ?>
                     <small class="text-muted">
@@ -144,7 +144,7 @@
   </div>
   <div class="card-footer d-flex justify-content-between align-items-center">
     <button type="submit" form="bulk_delete_form" class="btn btn-danger btn-sm d-none" id="bulk_delete_submit">Hapus Data Terpilih</button>
-    <div><?php echo $pagination ?? ''; ?></div>
+    <div><?php echo isset($pagination) ? $pagination : ''; ?></div>
   </div>
 </div>
 <script>

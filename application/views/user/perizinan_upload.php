@@ -1,7 +1,7 @@
 <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
   <div class="pr-md-3">
-    <h4 class="mb-1 text-gray-800"><?php echo html_escape($upload_title ?? 'Upload Surat Izin'); ?></h4>
-    <div class="small-text"><?php echo html_escape($upload_subtitle ?? 'Upload surat yang sudah ditandatangani oleh pimpinan pondok.'); ?></div>
+    <h4 class="mb-1 text-gray-800"><?php echo html_escape(!empty($upload_title) ? $upload_title : 'Upload Surat Izin'); ?></h4>
+    <div class="small-text"><?php echo html_escape(!empty($upload_subtitle) ? $upload_subtitle : 'Upload surat yang sudah ditandatangani oleh pimpinan pondok.'); ?></div>
   </div>
   <div class="mt-3 mt-md-0 d-flex flex-column flex-sm-row align-self-stretch">
     <a href="<?php echo site_url('user/perizinan'); ?>" class="btn btn-outline-primary btn-sm text-center">Kembali</a>
@@ -15,7 +15,7 @@
       <div class="card-body">
         <div class="alert alert-info mb-3">
           <i class="fas fa-info-circle mr-2"></i>
-          <?php echo html_escape($upload_notice ?? 'Pastikan surat sudah ditandatangani tangan oleh pimpinan pondok sebelum diupload.'); ?>
+          <?php echo html_escape(!empty($upload_notice) ? $upload_notice : 'Pastikan surat sudah ditandatangani tangan oleh pimpinan pondok sebelum diupload.'); ?>
         </div>
 
         <form method="post" enctype="multipart/form-data">
@@ -64,7 +64,7 @@
               <label class="custom-file-label" for="surat_file">Pilih file PDF...</label>
             </div>
             <small class="form-text text-muted d-block mt-2">
-              <?php echo html_escape($upload_file_hint ?? 'Format: PDF | Ukuran maksimal: 2 MB'); ?>
+              <?php echo html_escape(!empty($upload_file_hint) ? $upload_file_hint : 'Format: PDF | Ukuran maksimal: 2 MB'); ?>
             </small>
           </div>
 
