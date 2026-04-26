@@ -1,7 +1,10 @@
 <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
   <div class="pr-md-3">
     <h4 class="mb-1 text-dark">Data Santri</h4>
-    <div class="small-text">Data santri pondok berdasarkan data mahasiswa yang sudah ada di Universitas Alma Ata.</div>
+    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
+      <div class="small-text">Data santri pondok berdasarkan data mahasiswa yang sudah ada di Universitas Alma Ata.</div>
+      <div class="small-text font-weight-bold ml-md-3">Saat ini ada <?php echo (int) (isset($pagination['total_rows']) ? $pagination['total_rows'] : 0); ?> santri</div>
+    </div>
   </div>
   <div class="mt-3 mt-md-0 d-flex flex-column flex-sm-row align-self-stretch">
     <a href="<?php echo site_url('admin/dashboard'); ?>" class="btn btn-outline-primary btn-sm text-center">Kembali</a>

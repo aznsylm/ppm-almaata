@@ -16,7 +16,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | php -r "echo password_hash('PasswordBaruKuat123!', PASSWORD_DEFAULT), PHP_EOL;"
 | Salin hasil hash ke PPM_ADMIN_PASSWORD_HASH (atau ke fallback config kalau pakai cara cepat)
 */
-$config['ppm_admin_nim'] = getenv('PPM_ADMIN_NIM') ?: '082322282272';
+$config['ppm_admin_nim'] = getenv('PPM_ADMIN_NIM') ?: 'AdminPPM';
 $config['ppm_admin_password_hash'] = getenv('PPM_ADMIN_PASSWORD_HASH') ?: '$2y$10$yxkcySP.dbsgzx7x.O4FnOrg6ITsiDYj58TRP3jds7mjTU/IVz.nq';
 
 $config['ppm_role_admin'] = 'admin';

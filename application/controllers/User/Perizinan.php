@@ -437,9 +437,17 @@ class Perizinan extends MY_Controller
         $dompdf = new Dompdf\Dompdf(array(
             'isRemoteEnabled' => TRUE
         ));
+        if (method_exists($dompdf, 'set_option')) {
+            $dompdf->set_option('isHtml5ParserEnabled', true);
+        }
         $dompdf->loadHtml($html, 'UTF-8');
         $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
+        try {
+            $dompdf->render();
+        } catch (Exception $e) {
+            log_message('error', 'Gagal render PDF dompdf: ' . $e->getMessage());
+            return FALSE;
+        }
 
         $filename = $this->get_surat_filename($view_data['izin']);
         $saved = file_put_contents($upload_dir . $filename, $dompdf->output());
