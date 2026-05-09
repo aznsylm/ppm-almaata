@@ -32,12 +32,14 @@ if (!empty($authUser) && $authUser['role'] === 'admin') {
     array('label' => 'Dashboard', 'url' => site_url('admin/dashboard'), 'icon' => 'fa-tachometer-alt', 'match' => 'admin/dashboard'),
     array('label' => 'Data Santri', 'url' => site_url('admin/santri'), 'icon' => 'fa-users', 'match' => 'admin/santri'),
     array('label' => 'Data Perizinan', 'url' => site_url('admin/perizinan'), 'icon' => 'fa-clipboard-list', 'match' => 'admin/perizinan'),
+    array('label' => 'Kehadiran', 'url' => site_url('admin/kehadiran'), 'icon' => 'fa-check-circle', 'match' => 'admin/kehadiran'),
     array('label' => 'Raising', 'url' => 'https://raising.almaata.ac.id/', 'icon' => 'fa-external-link-alt', 'target' => '_blank', 'rel' => 'noopener noreferrer'),
     array('label' => 'PPM Alma Ata', 'url' => 'https://ponpesmahasiswa.almaata.ac.id/', 'icon' => 'fa-external-link-alt', 'target' => '_blank', 'rel' => 'noopener noreferrer'),
   );
 } else {
   $menuItems = array(
     array('label' => 'Dashboard', 'url' => site_url('user/dashboard'), 'icon' => 'fa-home', 'match' => 'user/dashboard'),
+    array('label' => 'Presensi', 'url' => site_url('user/presensi'), 'icon' => 'fa-check-circle', 'match' => 'user/presensi'),
     array('label' => 'Perizinan', 'url' => site_url('user/perizinan'), 'icon' => 'fa-file-signature', 'match' => 'user/perizinan'),
     array('label' => 'Raising', 'url' => 'https://raising.almaata.ac.id/', 'icon' => 'fa-external-link-alt', 'target' => '_blank', 'rel' => 'noopener noreferrer'),
     array('label' => 'PPM Alma Ata', 'url' => 'https://ponpesmahasiswa.almaata.ac.id/', 'icon' => 'fa-external-link-alt', 'target' => '_blank', 'rel' => 'noopener noreferrer'),

@@ -60,7 +60,7 @@
       </div>
       <div class="card-body">
         <p class="mb-2">Pondok Pesantren Mahasiswa Universitas Alma Ata</p>
-        <p class="mb-0">Pimpinan pondok: <strong>Prof. Dr. dr. Hamam Hadi, MS., Sc.D., Sp.GK.</strong></p>
+        <p class="mb-0">Pimpinan pondok: <strong>KH. Hamam Hadi</strong></p>
       </div>
     </div>
   </div>

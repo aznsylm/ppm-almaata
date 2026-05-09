@@ -48,6 +48,9 @@ if (isset($profile['acc_izin_terakhir'])) {
     <div class="small-text">Peta data lengkap: ringkasan utama, akademik, biodata, kontak, ortu/wali, dan riwayat izin.</div>
   </div>
   <div class="mt-3 mt-md-0 d-flex flex-column flex-sm-row align-self-stretch">
+    <a href="<?php echo site_url('user/presensi'); ?>" class="btn btn-primary btn-sm mb-2 mb-sm-0 mr-sm-2">
+      <i class="fas fa-check-circle mr-1"></i>Presensi
+    </a>
     <a href="<?php echo site_url('user/perizinan'); ?>" class="btn btn-primary btn-sm mb-2 mb-sm-0 mr-sm-2">
       <i class="fas fa-file-signature mr-1"></i>Perizinan
     </a>
@@ -95,7 +98,13 @@ if (isset($profile['acc_izin_terakhir'])) {
 <div class="row mt-1">
   <div class="col-lg-6 mb-4">
     <div class="card shadow-sm h-100">
-      <div class="card-header bg-white"><strong>Ringkasan Utama</strong></div>
+      <div class="card-header bg-white d-flex justify-content-start align-items-center">
+        <strong>Ringkasan Utama</strong>
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseRingkasanUtama" aria-expanded="true" aria-controls="collapseRingkasanUtama">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+      <div id="collapseRingkasanUtama" class="collapse show">
       <div class="card-body">
         <div class="row">
           <div class="col-md-6 mb-3">
@@ -108,12 +117,19 @@ if (isset($profile['acc_izin_terakhir'])) {
           </div>
         </div>
       </div>
+      </div>
     </div>
   </div>
 
   <div class="col-lg-6 mb-4">
     <div class="card shadow-sm h-100">
-      <div class="card-header bg-white"><strong>Riwayat Izin Singkat</strong></div>
+      <div class="card-header bg-white d-flex justify-content-start align-items-center">
+        <strong>Riwayat Izin Singkat</strong>
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseRiwayatIzinSingkat" aria-expanded="true" aria-controls="collapseRiwayatIzinSingkat">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+      <div id="collapseRiwayatIzinSingkat" class="collapse show">
       <div class="card-body">
         <div class="mb-3">
           <div class="small-text">Total Pengajuan</div>
@@ -128,6 +144,7 @@ if (isset($profile['acc_izin_terakhir'])) {
           <div class="font-weight-bold"><?php echo html_escape($statusIzinTerakhir); ?></div>
         </div>
       </div>
+      </div>
     </div>
   </div>
 </div>
@@ -135,7 +152,13 @@ if (isset($profile['acc_izin_terakhir'])) {
 <div class="row">
   <div class="col-lg-6 mb-4">
     <div class="card shadow-sm h-100">
-      <div class="card-header bg-white"><strong>Profil Akademik</strong></div>
+      <div class="card-header bg-white d-flex justify-content-start align-items-center">
+        <strong>Profil Akademik</strong>
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseProfilAkademik" aria-expanded="true" aria-controls="collapseProfilAkademik">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+      <div id="collapseProfilAkademik" class="collapse show">
       <div class="card-body">
         <div class="row">
           <div class="col-md-6 mb-3">
@@ -156,12 +179,19 @@ if (isset($profile['acc_izin_terakhir'])) {
           </div>
         </div>
       </div>
+      </div>
     </div>
   </div>
 
   <div class="col-lg-6 mb-4">
     <div class="card shadow-sm h-100">
-      <div class="card-header bg-white"><strong>Profil Pribadi</strong></div>
+      <div class="card-header bg-white d-flex justify-content-start align-items-center">
+        <strong>Profil Pribadi</strong>
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseProfilPribadi" aria-expanded="true" aria-controls="collapseProfilPribadi">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+      <div id="collapseProfilPribadi" class="collapse show">
       <div class="card-body">
         <div class="row">
           <div class="col-md-6 mb-3">
@@ -190,6 +220,7 @@ if (isset($profile['acc_izin_terakhir'])) {
           </div>
         </div>
       </div>
+      </div>
     </div>
   </div>
 </div>
@@ -197,7 +228,13 @@ if (isset($profile['acc_izin_terakhir'])) {
 <div class="row">
   <div class="col-lg-6 mb-4">
     <div class="card shadow-sm h-100">
-      <div class="card-header bg-white"><strong>Kontak & Domisili</strong></div>
+      <div class="card-header bg-white d-flex justify-content-start align-items-center">
+        <strong>Kontak & Domisili</strong>
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseKontakDomisili" aria-expanded="true" aria-controls="collapseKontakDomisili">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+      <div id="collapseKontakDomisili" class="collapse show">
       <div class="card-body">
         <div class="row">
           <div class="col-md-6 mb-3">
@@ -218,12 +255,19 @@ if (isset($profile['acc_izin_terakhir'])) {
           </div>
         </div>
       </div>
+      </div>
     </div>
   </div>
 
   <div class="col-lg-6 mb-4">
     <div class="card shadow-sm h-100">
-      <div class="card-header bg-white"><strong>Orang Tua / Wali & Sekolah Asal</strong></div>
+      <div class="card-header bg-white d-flex justify-content-start align-items-center">
+        <strong>Orang Tua / Wali & Sekolah Asal</strong>
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseOrtuSekolah" aria-expanded="true" aria-controls="collapseOrtuSekolah">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+      <div id="collapseOrtuSekolah" class="collapse show">
       <div class="card-body">
         <div class="row">
           <div class="col-md-6 mb-3">
@@ -251,6 +295,7 @@ if (isset($profile['acc_izin_terakhir'])) {
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['pendidikan_sekolah']) ? $profile['pendidikan_sekolah'] : NULL)); ?></div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>

@@ -57,6 +57,17 @@
 
 /*
  *---------------------------------------------------------------
+ * TIMEZONE SETTING
+ *---------------------------------------------------------------
+ *
+ * Set the timezone for the application. This ensures that all
+ * date/time functions use the correct timezone.
+ * Using Asia/Jakarta for Indonesian local time
+ */
+	date_default_timezone_set('Asia/Jakarta');
+
+/*
+ *---------------------------------------------------------------
  * ERROR REPORTING
  *---------------------------------------------------------------
  *

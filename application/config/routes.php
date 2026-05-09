@@ -64,14 +64,34 @@ $route['admin/santri/update/(:num)'] = 'admin/santri/update/$1';
 $route['admin/santri/delete/(:num)'] = 'admin/santri/delete/$1';
 $route['admin/perizinan'] = 'admin/perizinan/index';
 $route['admin/perizinan/delete-selected'] = 'admin/perizinan/delete_selected';
-$route['admin/perizinan/validate/(:any)'] = 'admin/perizinan/validate_upload/$1';
+$route['admin/perizinan/validate/(:any)'] = 'admin/perizinan/validate_izin/$1';
 $route['admin/perizinan/selesaikan-izin/(:any)'] = 'admin/perizinan/selesaikan_izin/$1';
 $route['admin/perizinan/lanjutkan-izin/(:any)'] = 'admin/perizinan/lanjutkan_izin/$1';
+$route['admin/perizinan/backup-filtered'] = 'admin/perizinan/backup_filtered';
+$route['admin/perizinan/hapus-filtered'] = 'admin/perizinan/hapus_filtered';
+
+$route['admin/backup'] = 'admin/backup/index';
+$route['admin/backup/download'] = 'admin/backup/download';
+$route['admin/backup/hapus'] = 'admin/backup/hapus';
+
+$route['admin/kehadiran'] = 'admin/kehadiran/index';
+$route['admin/kehadiran/detail/(:any)'] = 'admin/kehadiran/detail/$1';
+$route['admin/kehadiran/finalisasi'] = 'admin/kehadiran/finalisasi';
+$route['admin/kehadiran/jadwal'] = 'admin/kehadiran/jadwal';
+$route['admin/kehadiran/update_jadwal'] = 'admin/kehadiran/update_jadwal';
+$route['admin/kehadiran/manual'] = 'admin/kehadiran/manual';
+$route['admin/kehadiran/manual_store'] = 'admin/kehadiran/manual_store';
+$route['admin/kehadiran/manual_edit/(:num)'] = 'admin/kehadiran/manual_edit/$1';
+$route['admin/kehadiran/manual_hapus/(:num)'] = 'admin/kehadiran/manual_hapus/$1';
 
 $route['user/dashboard'] = 'user/dashboard/index';
+$route['user/presensi'] = 'user/presensi/index';
+$route['user/presensi/checkin'] = 'user/presensi/checkin';
+$route['user/presensi/history'] = 'user/presensi/history';
 $route['user/perizinan'] = 'user/perizinan/index';
 $route['user/perizinan/submit'] = 'user/perizinan/submit';
-$route['user/perizinan/reapply-haid/(:any)'] = 'user/perizinan/reapply_haid/$1';
 $route['user/perizinan/download/(:any)'] = 'user/perizinan/download/$1';
-$route['user/perizinan/upload/(:any)'] = 'user/perizinan/upload/$1';
+$route['user/perizinan/upload-surat/(:any)'] = 'user/perizinan/upload_surat/$1';
+$route['user/perizinan/upload-dokumentasi/(:any)'] = 'user/perizinan/upload_dokumentasi/$1';
+$route['user/perizinan/dokumentasi/(:any)'] = 'user/perizinan/dokumentasi/$1';
 $route['user/perizinan/cetak/(:any)'] = 'user/perizinan/cetak/$1';
