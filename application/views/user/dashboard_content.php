@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $v = static function ($value, $fallback = '-') {
   if ($value === NULL) {
     return $fallback;
@@ -24,10 +24,10 @@ if ($jkKode === 'L') {
 }
 
 $statusIzin = 'Tidak ada izin aktif';
-$statusIzinClass = 'badge badge-success badge-soft';
+$statusIzinClass = 'badge badge-success';
 if (!empty($profile['izin_aktif_mulai']) && !empty($profile['izin_aktif_selesai'])) {
   $statusIzin = 'Sedang izin';
-  $statusIzinClass = 'badge badge-warning badge-soft';
+  $statusIzinClass = 'badge badge-warning';
 }
 
 $statusIzinTerakhir = '-';
@@ -44,8 +44,8 @@ if (isset($profile['acc_izin_terakhir'])) {
 
 <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
   <div class="pr-md-3">
-    <h4 class="mb-1 text-gray-800">Dashboard Santri</h4>
-    <div class="small-text">Peta data lengkap: ringkasan utama, akademik, biodata, kontak, ortu/wali, dan riwayat izin.</div>
+    <h4 class="mb-1 text-dark">Dashboard Santri</h4>
+    <div class="text-muted small">Peta data lengkap: ringkasan utama, akademik, biodata, kontak, ortu/wali, dan riwayat izin.</div>
   </div>
   <div class="mt-3 mt-md-0 d-flex flex-column flex-sm-row align-self-stretch">
     <a href="<?php echo site_url('user/presensi'); ?>" class="btn btn-primary btn-sm mb-2 mb-sm-0 mr-sm-2">
@@ -61,35 +61,39 @@ if (isset($profile['acc_izin_terakhir'])) {
 </div>
 
 <div class="row">
-  <div class="col-lg-3 col-md-6 mb-4">
-    <div class="card shadow-sm h-100">
-      <div class="card-body">
-        <div class="text-xs font-weight-bold text-uppercase mb-2">NIM</div>
-        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v(isset($profile['nim']) ? $profile['nim'] : NULL)); ?></div>
+  <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-info elevation-1"><i class="fas fa-id-card"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">NIM</span>
+        <span class="info-box-number"><?php echo html_escape($v(isset($profile['nim']) ? $profile['nim'] : NULL)); ?></span>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 col-md-6 mb-4">
-    <div class="card shadow-sm h-100">
-      <div class="card-body">
-        <div class="text-xs font-weight-bold text-uppercase mb-2">Nama</div>
-        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v(isset($profile['nama']) ? $profile['nama'] : NULL)); ?></div>
+  <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-success elevation-1"><i class="fas fa-user"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Nama</span>
+        <span class="info-box-number" style="font-size:1rem;"><?php echo html_escape($v(isset($profile['nama']) ? $profile['nama'] : NULL)); ?></span>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 col-md-6 mb-4">
-    <div class="card shadow-sm h-100">
-      <div class="card-body">
-        <div class="text-xs font-weight-bold text-uppercase mb-2">Prodi</div>
-        <div class="h6 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v(isset($profile['prodi']) ? $profile['prodi'] : NULL)); ?></div>
+  <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-graduation-cap"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Prodi</span>
+        <span class="info-box-number" style="font-size:.9rem;"><?php echo html_escape($v(isset($profile['prodi']) ? $profile['prodi'] : NULL)); ?></span>
       </div>
     </div>
   </div>
-  <div class="col-lg-3 col-md-6 mb-4">
-    <div class="card shadow-sm h-100">
-      <div class="card-body">
-        <div class="text-xs font-weight-bold text-uppercase mb-2">Kamar</div>
-        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo html_escape($v(isset($profile['kamar']) ? $profile['kamar'] : NULL)); ?></div>
+  <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+    <div class="info-box">
+      <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-door-open"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Kamar</span>
+        <span class="info-box-number"><?php echo html_escape($v(isset($profile['kamar']) ? $profile['kamar'] : NULL)); ?></span>
       </div>
     </div>
   </div>
@@ -97,22 +101,22 @@ if (isset($profile['acc_izin_terakhir'])) {
 
 <div class="row mt-1">
   <div class="col-lg-6 mb-4">
-    <div class="card shadow-sm h-100">
-      <div class="card-header bg-white d-flex justify-content-start align-items-center">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-start align-items-center">
         <strong>Ringkasan Utama</strong>
-        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseRingkasanUtama" aria-expanded="true" aria-controls="collapseRingkasanUtama">
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseRingkasanUtama" aria-expanded="false" aria-controls="collapseRingkasanUtama">
           <i class="fas fa-chevron-down"></i>
         </button>
       </div>
-      <div id="collapseRingkasanUtama" class="collapse show">
+      <div id="collapseRingkasanUtama" class="collapse">
       <div class="card-body">
         <div class="row">
           <div class="col-md-6 mb-3">
-            <div class="small-text">Status Izin Saat Ini</div>
+            <div class="text-muted small">Status Izin Saat Ini</div>
             <span class="<?php echo $statusIzinClass; ?>"><?php echo html_escape($statusIzin); ?></span>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">Periode Izin Aktif</div>
+            <div class="text-muted small">Periode Izin Aktif</div>
             <div class="font-weight-bold"><?php echo html_escape($d(isset($profile['izin_aktif_mulai']) ? $profile['izin_aktif_mulai'] : NULL)); ?> s/d <?php echo html_escape($d(isset($profile['izin_aktif_selesai']) ? $profile['izin_aktif_selesai'] : NULL)); ?></div>
           </div>
         </div>
@@ -122,25 +126,25 @@ if (isset($profile['acc_izin_terakhir'])) {
   </div>
 
   <div class="col-lg-6 mb-4">
-    <div class="card shadow-sm h-100">
-      <div class="card-header bg-white d-flex justify-content-start align-items-center">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-start align-items-center">
         <strong>Riwayat Izin Singkat</strong>
-        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseRiwayatIzinSingkat" aria-expanded="true" aria-controls="collapseRiwayatIzinSingkat">
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseRiwayatIzinSingkat" aria-expanded="false" aria-controls="collapseRiwayatIzinSingkat">
           <i class="fas fa-chevron-down"></i>
         </button>
       </div>
-      <div id="collapseRiwayatIzinSingkat" class="collapse show">
+      <div id="collapseRiwayatIzinSingkat" class="collapse">
       <div class="card-body">
         <div class="mb-3">
-          <div class="small-text">Total Pengajuan</div>
+          <div class="text-muted small">Total Pengajuan</div>
           <div class="h4 font-weight-bold mb-0"><?php echo (int) (isset($profile['total_izin']) ? $profile['total_izin'] : 0); ?></div>
         </div>
         <div class="mb-2">
-          <div class="small-text">Pengajuan Terakhir</div>
+          <div class="text-muted small">Pengajuan Terakhir</div>
           <div class="font-weight-bold"><?php echo html_escape($d(isset($profile['tanggal_izin_terakhir']) ? $profile['tanggal_izin_terakhir'] : NULL)); ?></div>
         </div>
         <div>
-          <div class="small-text">Status Terakhir</div>
+          <div class="text-muted small">Status Terakhir</div>
           <div class="font-weight-bold"><?php echo html_escape($statusIzinTerakhir); ?></div>
         </div>
       </div>
@@ -151,30 +155,30 @@ if (isset($profile['acc_izin_terakhir'])) {
 
 <div class="row">
   <div class="col-lg-6 mb-4">
-    <div class="card shadow-sm h-100">
-      <div class="card-header bg-white d-flex justify-content-start align-items-center">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-start align-items-center">
         <strong>Profil Akademik</strong>
-        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseProfilAkademik" aria-expanded="true" aria-controls="collapseProfilAkademik">
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseProfilAkademik" aria-expanded="false" aria-controls="collapseProfilAkademik">
           <i class="fas fa-chevron-down"></i>
         </button>
       </div>
-      <div id="collapseProfilAkademik" class="collapse show">
+      <div id="collapseProfilAkademik" class="collapse">
       <div class="card-body">
         <div class="row">
           <div class="col-md-6 mb-3">
-            <div class="small-text">Angkatan</div>
+            <div class="text-muted small">Angkatan</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['angkatan']) ? $profile['angkatan'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">Semester Masuk</div>
+            <div class="text-muted small">Semester Masuk</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['semester_masuk']) ? $profile['semester_masuk'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">Status Mahasiswa</div>
+            <div class="text-muted small">Status Mahasiswa</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['status_mahasiswa']) ? $profile['status_mahasiswa'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">Jenjang / Kode Prodi</div>
+            <div class="text-muted small">Jenjang / Kode Prodi</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['jenjang_kode']) ? $profile['jenjang_kode'] : NULL)); ?> / <?php echo html_escape($v(isset($profile['prodi_kode']) ? $profile['prodi_kode'] : NULL)); ?></div>
           </div>
         </div>
@@ -184,38 +188,38 @@ if (isset($profile['acc_izin_terakhir'])) {
   </div>
 
   <div class="col-lg-6 mb-4">
-    <div class="card shadow-sm h-100">
-      <div class="card-header bg-white d-flex justify-content-start align-items-center">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-start align-items-center">
         <strong>Profil Pribadi</strong>
-        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseProfilPribadi" aria-expanded="true" aria-controls="collapseProfilPribadi">
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseProfilPribadi" aria-expanded="false" aria-controls="collapseProfilPribadi">
           <i class="fas fa-chevron-down"></i>
         </button>
       </div>
-      <div id="collapseProfilPribadi" class="collapse show">
+      <div id="collapseProfilPribadi" class="collapse">
       <div class="card-body">
         <div class="row">
           <div class="col-md-6 mb-3">
-            <div class="small-text">Tempat, Tanggal Lahir</div>
+            <div class="text-muted small">Tempat, Tanggal Lahir</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['tempat_lahir']) ? $profile['tempat_lahir'] : NULL)); ?>, <?php echo html_escape($d(isset($profile['tanggal_lahir']) ? $profile['tanggal_lahir'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">Jenis Kelamin</div>
+            <div class="text-muted small">Jenis Kelamin</div>
             <div class="font-weight-bold"><?php echo html_escape($jenisKelamin); ?></div>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">Agama</div>
+            <div class="text-muted small">Agama</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['agama']) ? $profile['agama'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">Golongan Darah</div>
+            <div class="text-muted small">Golongan Darah</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['golongan_darah']) ? $profile['golongan_darah'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">Tinggi Badan</div>
+            <div class="text-muted small">Tinggi Badan</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['tinggi_badan']) ? $profile['tinggi_badan'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">Berat Badan</div>
+            <div class="text-muted small">Berat Badan</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['berat_badan']) ? $profile['berat_badan'] : NULL)); ?></div>
           </div>
         </div>
@@ -227,30 +231,30 @@ if (isset($profile['acc_izin_terakhir'])) {
 
 <div class="row">
   <div class="col-lg-6 mb-4">
-    <div class="card shadow-sm h-100">
-      <div class="card-header bg-white d-flex justify-content-start align-items-center">
-        <strong>Kontak & Domisili</strong>
-        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseKontakDomisili" aria-expanded="true" aria-controls="collapseKontakDomisili">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-start align-items-center">
+        <strong>Kontak &amp; Domisili</strong>
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseKontakDomisili" aria-expanded="false" aria-controls="collapseKontakDomisili">
           <i class="fas fa-chevron-down"></i>
         </button>
       </div>
-      <div id="collapseKontakDomisili" class="collapse show">
+      <div id="collapseKontakDomisili" class="collapse">
       <div class="card-body">
         <div class="row">
           <div class="col-md-6 mb-3">
-            <div class="small-text">Email Kampus</div>
+            <div class="text-muted small">Email Kampus</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['email_kampus']) ? $profile['email_kampus'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">Email Akun</div>
+            <div class="text-muted small">Email Akun</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['email']) ? $profile['email'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">No HP</div>
+            <div class="text-muted small">No HP</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['no_hp']) ? $profile['no_hp'] : NULL)); ?></div>
           </div>
           <div class="col-md-12 mb-3">
-            <div class="small-text">Alamat</div>
+            <div class="text-muted small">Alamat</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['alamat']) ? $profile['alamat'] : NULL)); ?></div>
           </div>
         </div>
@@ -260,38 +264,38 @@ if (isset($profile['acc_izin_terakhir'])) {
   </div>
 
   <div class="col-lg-6 mb-4">
-    <div class="card shadow-sm h-100">
-      <div class="card-header bg-white d-flex justify-content-start align-items-center">
-        <strong>Orang Tua / Wali & Sekolah Asal</strong>
-        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseOrtuSekolah" aria-expanded="true" aria-controls="collapseOrtuSekolah">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-start align-items-center">
+        <strong>Orang Tua / Wali &amp; Sekolah Asal</strong>
+        <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseOrtuSekolah" aria-expanded="false" aria-controls="collapseOrtuSekolah">
           <i class="fas fa-chevron-down"></i>
         </button>
       </div>
-      <div id="collapseOrtuSekolah" class="collapse show">
+      <div id="collapseOrtuSekolah" class="collapse">
       <div class="card-body">
         <div class="row">
           <div class="col-md-6 mb-3">
-            <div class="small-text">Nama Ortu/Wali</div>
+            <div class="text-muted small">Nama Ortu/Wali</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['nama_ortu_wali']) ? $profile['nama_ortu_wali'] : NULL)); ?></div>
           </div>
           <div class="col-md-6 mb-3">
-            <div class="small-text">Telp Ortu/Wali</div>
+            <div class="text-muted small">Telp Ortu/Wali</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['telp_ortu_wali']) ? $profile['telp_ortu_wali'] : NULL)); ?></div>
           </div>
           <div class="col-md-12 mb-3">
-            <div class="small-text">Pekerjaan Ortu/Wali</div>
+            <div class="text-muted small">Pekerjaan Ortu/Wali</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['pekerjaan_ortu_wali']) ? $profile['pekerjaan_ortu_wali'] : NULL)); ?></div>
           </div>
           <div class="col-md-8 mb-3">
-            <div class="small-text">Sekolah Asal</div>
+            <div class="text-muted small">Sekolah Asal</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['nama_sekolah']) ? $profile['nama_sekolah'] : NULL)); ?></div>
           </div>
           <div class="col-md-4 mb-3">
-            <div class="small-text">Tahun Lulus</div>
+            <div class="text-muted small">Tahun Lulus</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['tahun_lulus']) ? $profile['tahun_lulus'] : NULL)); ?></div>
           </div>
           <div class="col-md-12">
-            <div class="small-text">Jenjang Sekolah</div>
+            <div class="text-muted small">Jenjang Sekolah</div>
             <div class="font-weight-bold"><?php echo html_escape($v(isset($profile['pendidikan_sekolah']) ? $profile['pendidikan_sekolah'] : NULL)); ?></div>
           </div>
         </div>

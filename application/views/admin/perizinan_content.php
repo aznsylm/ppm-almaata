@@ -1,7 +1,7 @@
-<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
+﻿<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
   <div class="pr-md-3">
-    <h4 class="mb-1 text-gray-800">Validasi Perizinan</h4>
-    <div class="small-text">Kelola dan validasi pengajuan izin santri.</div>
+    <h4 class="mb-1 text-dark">Validasi Perizinan</h4>
+    <div class="text-muted small">Kelola dan validasi pengajuan izin santri.</div>
   </div>
   <div class="mt-3 mt-md-0">
     <a href="<?php echo site_url('admin/backup'); ?>" class="btn btn-outline-success btn-sm mr-1">Backup Data</a>
@@ -25,18 +25,20 @@
 <!-- Summary -->
 <div class="row mb-3">
   <div class="col-md-6 mb-2">
-    <div class="card shadow-sm">
-      <div class="card-body py-3">
-        <div class="small text-muted">Santri Aktif Saat Ini</div>
-        <div class="h4 mb-0 font-weight-bold"><?php echo (int) (isset($status_summary['total_aktif']) ? $status_summary['total_aktif'] : 0); ?></div>
+    <div class="info-box mb-0">
+      <span class="info-box-icon bg-info"><i class="fas fa-users"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Santri Aktif Saat Ini</span>
+        <span class="info-box-number"><?php echo (int) (isset($status_summary['total_aktif']) ? $status_summary['total_aktif'] : 0); ?></span>
       </div>
     </div>
   </div>
   <div class="col-md-6 mb-2">
-    <div class="card shadow-sm">
-      <div class="card-body py-3">
-        <div class="small text-muted">Santri Sedang Izin</div>
-        <div class="h4 mb-0 font-weight-bold"><?php echo (int) (isset($status_summary['total_izin']) ? $status_summary['total_izin'] : 0); ?></div>
+    <div class="info-box mb-0">
+      <span class="info-box-icon bg-warning"><i class="fas fa-door-open"></i></span>
+      <div class="info-box-content">
+        <span class="info-box-text">Santri Sedang Izin</span>
+        <span class="info-box-number"><?php echo (int) (isset($status_summary['total_izin']) ? $status_summary['total_izin'] : 0); ?></span>
       </div>
     </div>
   </div>
@@ -57,21 +59,22 @@
   $filter_count = array_sum($active_filters);
 ?>
 <form method="get" action="<?php echo site_url('admin/perizinan'); ?>" id="form_filter">
-  <div class="card shadow-sm mb-3">
+  <div class="card mb-3">
     <div class="card-body py-2">
       <div class="d-flex flex-wrap align-items-center justify-content-between" style="gap:6px;">
-        <!-- Kiri: Search + Filter -->
+
+        <!-- Kiri: Search + Filter toggle -->
         <div class="d-flex align-items-center" style="gap:6px;">
           <input type="text" name="q" class="form-control form-control-sm"
-                 style="width:200px;"
+                 style="width:220px;"
                  value="<?php echo html_escape(isset($filters['q']) ? $filters['q'] : ''); ?>"
-                 placeholder="Cari NIM / Nama">
+                 placeholder="Cari NIM / Nama...">
 
           <div class="position-relative">
-            <button type="button" class="btn btn-outline-primary btn-sm" id="btn_filter_toggle">
-              <i class="fas fa-filter"></i> Filter
+            <button type="button" class="btn btn-secondary btn-sm" id="btn_filter_toggle">
+              <i class="fas fa-sliders-h"></i> Filter
               <?php if ($filter_count > 0): ?>
-                <span class="badge badge-primary ml-1"><?php echo $filter_count; ?></span>
+                <span class="badge badge-light ml-1"><?php echo $filter_count; ?></span>
               <?php endif; ?>
             </button>
 
@@ -159,34 +162,52 @@
                 <input type="date" name="tgl_sampai" class="form-control form-control-sm"
                        value="<?php echo html_escape(isset($filters['tgl_sampai']) ? $filters['tgl_sampai'] : ''); ?>">
               </div>
-              <button type="submit" class="btn btn-primary btn-sm btn-block">Terapkan Filter</button>
+              <div class="d-flex" style="gap:6px;">
+                <button type="submit" class="btn btn-primary btn-sm flex-fill">Terapkan</button>
+                <?php if ($filter_count > 0): ?>
+                  <a href="<?php echo site_url('admin/perizinan'); ?>" class="btn btn-outline-secondary btn-sm">Reset</a>
+                <?php endif; ?>
+              </div>
             </div>
           </div>
+
+          <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-search"></i></button>
+          <?php if ($filter_count > 0 || (isset($filters['q']) && $filters['q'] !== '')): ?>
+            <a href="<?php echo site_url('admin/perizinan'); ?>" class="btn btn-outline-secondary btn-sm">Reset</a>
+          <?php endif; ?>
         </div>
 
-        <!-- Kanan: Cari, Reset, Hapus, Backup, Hapus Filtered -->
+        <!-- Kanan: aksi data -->
         <div class="d-flex align-items-center" style="gap:6px;">
-          <button type="submit" class="btn btn-primary btn-sm">Cari</button>
-          <a href="<?php echo site_url('admin/perizinan'); ?>" class="btn btn-outline-secondary btn-sm">Reset</a>
-          <button type="button" id="btn_toggle_delete" class="btn btn-danger btn-sm">Hapus</button>
+          <button type="button" id="btn_toggle_delete" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-trash-alt"></i> Hapus Pilihan
+          </button>
           <?php
             $has_filter = FALSE;
             foreach ($filters as $fval) {
               if ($fval !== '') { $has_filter = TRUE; break; }
             }
           ?>
-          <a href="<?php echo site_url('admin/perizinan/backup-filtered?' . http_build_query(array_filter($filters))); ?>"
-             class="btn btn-success btn-sm <?php echo !$has_filter ? 'disabled' : ''; ?>"
-             title="<?php echo !$has_filter ? 'Terapkan filter dulu sebelum backup' : 'Backup data sesuai filter aktif'; ?>"
-             <?php echo !$has_filter ? 'tabindex="-1" aria-disabled="true"' : ''; ?>>
-            <i class="fas fa-download"></i> Backup
-          </a>
-          <button type="button"
-                  class="btn btn-outline-danger btn-sm"
-                  <?php echo !$has_filter ? 'disabled title="Terapkan filter dulu sebelum hapus"' : 'data-toggle="modal" data-target="#modalHapusFiltered" title="Hapus data sesuai filter aktif"'; ?>>
-            <i class="fas fa-trash"></i> Hapus Filter
-          </button>
+          <?php if ($has_filter): ?>
+          <div class="dropdown">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+              <i class="fas fa-database"></i> Data Filter
+            </button>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item"
+                 href="<?php echo site_url('admin/perizinan/backup-filtered?' . http_build_query(array_filter($filters))); ?>">
+                <i class="fas fa-download mr-2"></i>Backup CSV
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-danger" href="#"
+                 data-toggle="modal" data-target="#modalHapusFiltered">
+                <i class="fas fa-trash mr-2"></i>Hapus Permanen
+              </a>
+            </div>
+          </div>
+          <?php endif; ?>
         </div>
+
       </div>
     </div>
   </div>
@@ -209,7 +230,7 @@
 </form>
 
 <!-- Tabel -->
-<div class="card shadow-sm">
+<div class="card">
   <div class="card-body p-0">
     <div class="table-responsive">
       <table class="table table-hover table-sm mb-0">

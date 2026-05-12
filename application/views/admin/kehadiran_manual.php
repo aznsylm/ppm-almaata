@@ -1,10 +1,19 @@
+﻿<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
+  <div class="pr-md-3">
+    <h4 class="mb-1 text-dark">Kehadiran Manual</h4>
+    <div class="text-muted small">Input kehadiran santri secara manual oleh admin.</div>
+  </div>
+  <div class="mt-3 mt-md-0">
+    <a href="<?php echo site_url('admin/kehadiran'); ?>" class="btn btn-sm btn-outline-secondary">Kembali</a>
+  </div>
+</div>
+
 <div class="container-fluid">
   <div class="row">
     <div class="col-12">
       <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Kehadiran Manual</h5>
-          <a href="<?php echo site_url('admin/kehadiran'); ?>" class="btn btn-sm btn-secondary">Kembali</a>
+        <div class="card-header">
+          <h5 class="card-title mb-0">Input Kehadiran Manual</h5>
         </div>
         <div class="card-body">
           <!-- Tab Navigation -->
@@ -104,29 +113,27 @@
                       <option value="izin">Izin</option>
                     </select>
                   </div>
-                  <div class="col-md-3">
-                    <label>Filter Kamar</label>
-                    <select class="form-control" id="filter_kamar">
-                      <option value="">Semua Kamar</option>
-                      <?php foreach ($kamar_list as $kamar): ?>
-                        <option value="<?php echo html_escape($kamar); ?>"><?php echo html_escape($kamar); ?></option>
-                      <?php endforeach; ?>
-                    </select>
-                  </div>
+                  <div class="col-md-3"></div>
                 </div>
 
                 <!-- Search & Quick Actions -->
-                <div class="row mb-3">
-                  <div class="col-md-6">
-                    <label>Cari Santri</label>
-                    <input type="text" class="form-control" id="search_santri" placeholder="Ketik nama atau NIM...">
+                <div class="card mb-3">
+                  <div class="card-header">
+                    <h6 class="card-title mb-0">Filter Santri</h6>
                   </div>
-                  <div class="col-md-6">
-                    <label>&nbsp;</label>
-                    <div>
-                      <button type="button" class="btn btn-sm btn-outline-primary" id="select_all">Pilih Semua</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary" id="select_none">Hapus Semua</button>
-                      <button type="button" class="btn btn-sm btn-outline-info" id="select_kamar">Pilih Kamar</button>
+                  <div class="card-body">
+                    <div class="row align-items-end">
+                      <div class="col-md-6 mb-2">
+                        <label>Cari Santri</label>
+                        <input type="text" class="form-control form-control-sm" id="search_santri" placeholder="Ketik nama atau NIM...">
+                      </div>
+                      <div class="col-md-6 mb-2">
+                        <label>&nbsp;</label>
+                        <div>
+                          <button type="button" class="btn btn-sm btn-outline-primary" id="select_all">Pilih Semua</button>
+                          <button type="button" class="btn btn-sm btn-outline-secondary" id="select_none">Hapus Semua</button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -172,27 +179,34 @@
       <!-- Riwayat Kehadiran Manual -->
       <div class="card mt-4">
         <div class="card-header">
-          <h5 class="mb-0">Riwayat Kehadiran Manual</h5>
+          <h5 class="card-title mb-0">Riwayat Kehadiran Manual</h5>
         </div>
         <div class="card-body">
           <!-- Search & Filter -->
-          <div class="row mb-3">
-            <div class="col-md-4">
-              <input type="text" class="form-control form-control-sm" id="searchRiwayat" placeholder="Cari NIM atau Nama...">
+          <div class="card mb-3">
+            <div class="card-header">
+              <h6 class="card-title mb-0">Filter Riwayat</h6>
             </div>
-            <div class="col-md-3">
-              <select class="form-control form-control-sm" id="filterKegiatan">
-                <option value="">Semua Kegiatan</option>
-                <?php foreach ($kegiatan_list as $key => $label): ?>
-                  <option value="<?php echo html_escape($key); ?>"><?php echo html_escape($label); ?></option>
-                <?php endforeach; ?>
-              </select>
-            </div>
-            <div class="col-md-3">
-              <input type="date" class="form-control form-control-sm" id="filterTanggal" placeholder="Filter Tanggal">
-            </div>
-            <div class="col-md-2">
-              <button type="button" class="btn btn-secondary btn-sm btn-block" id="clearFilter">Clear</button>
+            <div class="card-body">
+              <div class="row align-items-end">
+                <div class="col-md-4 mb-2">
+                  <input type="text" class="form-control form-control-sm" id="searchRiwayat" placeholder="Cari NIM atau Nama...">
+                </div>
+                <div class="col-md-3 mb-2">
+                  <select class="form-control form-control-sm" id="filterKegiatan">
+                    <option value="">Semua Kegiatan</option>
+                    <?php foreach ($kegiatan_list as $key => $label): ?>
+                      <option value="<?php echo html_escape($key); ?>"><?php echo html_escape($label); ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div class="col-md-3 mb-2">
+                  <input type="date" class="form-control form-control-sm" id="filterTanggal" placeholder="Filter Tanggal">
+                </div>
+                <div class="col-md-2 mb-2">
+                  <button type="button" class="btn btn-secondary btn-sm btn-block" id="clearFilter">Clear</button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -314,20 +328,20 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize Select2 for santri dropdown
-  $('.select2-santri').select2({
-    theme: 'bootstrap4',
-    placeholder: 'Pilih Santri',
-    allowClear: true,
-    width: '100%'
-  });
+  // Initialize Select2 only when plugin is available.
+  if (window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.select2 === 'function') {
+    window.jQuery('.select2-santri').select2({
+      theme: 'bootstrap4',
+      placeholder: 'Pilih Santri',
+      allowClear: true,
+      width: '100%'
+    });
+  }
 
   // Smart Bulk Input JavaScript
   const searchInput = document.getElementById('search_santri');
-  const filterKamar = document.getElementById('filter_kamar');
   const selectAll = document.getElementById('select_all');
   const selectNone = document.getElementById('select_none');
-  const selectKamar = document.getElementById('select_kamar');
   const selectedCount = document.getElementById('selected_count');
   const santriItems = document.querySelectorAll('.santri-item');
   const santriCheckboxes = document.querySelectorAll('.santri-checkbox');
@@ -338,19 +352,16 @@ document.addEventListener('DOMContentLoaded', function() {
     selectedCount.textContent = checked;
   }
 
-  // Filter santri by search and kamar
+  // Filter santri by search
   function filterSantri() {
     const searchTerm = searchInput.value.toLowerCase();
-    const selectedKamar = filterKamar.value;
 
     santriItems.forEach(item => {
       const searchData = item.getAttribute('data-search');
-      const kamarData = item.getAttribute('data-kamar');
       
       const matchSearch = searchTerm === '' || searchData.includes(searchTerm);
-      const matchKamar = selectedKamar === '' || kamarData === selectedKamar;
       
-      if (matchSearch && matchKamar) {
+      if (matchSearch) {
         item.style.display = 'block';
       } else {
         item.style.display = 'none';
@@ -363,7 +374,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Event listeners
   searchInput.addEventListener('input', filterSantri);
-  filterKamar.addEventListener('change', filterSantri);
 
   selectAll.addEventListener('click', function() {
     santriItems.forEach(item => {
@@ -377,22 +387,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
   selectNone.addEventListener('click', function() {
     santriCheckboxes.forEach(cb => cb.checked = false);
-    updateSelectedCount();
-  });
-
-  selectKamar.addEventListener('click', function() {
-    const selectedKamar = filterKamar.value;
-    if (selectedKamar === '') {
-      alert('Pilih kamar terlebih dahulu');
-      return;
-    }
-    santriItems.forEach(item => {
-      const kamarData = item.getAttribute('data-kamar');
-      if (kamarData === selectedKamar) {
-        const checkbox = item.querySelector('.santri-checkbox');
-        if (checkbox) checkbox.checked = true;
-      }
-    });
     updateSelectedCount();
   });
 
@@ -411,19 +405,23 @@ document.addEventListener('DOMContentLoaded', function() {
   const clearBtn = document.getElementById('clearFilter');
   const riwayatRows = document.querySelectorAll('.riwayat-row');
   const noDataRow = document.getElementById('noDataRow');
+
+  if (!searchRiwayat || !filterKegiatan || !filterTanggal || !clearBtn) {
+    return;
+  }
   
   function filterRiwayat() {
-    const searchTerm = searchRiwayat.value.toLowerCase();
-    const selectedKegiatan = filterKegiatan.value;
-    const selectedTanggal = filterTanggal.value;
+    const searchTerm = (searchRiwayat.value || '').toLowerCase();
+    const selectedKegiatan = filterKegiatan.value || '';
+    const selectedTanggal = filterTanggal.value || '';
     
     let visibleCount = 0;
     
     riwayatRows.forEach(row => {
-      const nim = row.getAttribute('data-nim');
-      const nama = row.getAttribute('data-nama');
-      const kegiatan = row.getAttribute('data-kegiatan');
-      const tanggal = row.getAttribute('data-tanggal');
+      const nim = row.getAttribute('data-nim') || '';
+      const nama = row.getAttribute('data-nama') || '';
+      const kegiatan = row.getAttribute('data-kegiatan') || '';
+      const tanggal = row.getAttribute('data-tanggal') || '';
       
       const matchSearch = searchTerm === '' || nim.includes(searchTerm) || nama.includes(searchTerm);
       const matchKegiatan = selectedKegiatan === '' || kegiatan === selectedKegiatan;
@@ -450,8 +448,10 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Event listeners for riwayat filter
   searchRiwayat.addEventListener('input', filterRiwayat);
+  searchRiwayat.addEventListener('keyup', filterRiwayat);
   filterKegiatan.addEventListener('change', filterRiwayat);
   filterTanggal.addEventListener('change', filterRiwayat);
+  filterTanggal.addEventListener('input', filterRiwayat);
   
   // Clear filters
   clearBtn.addEventListener('click', function() {
@@ -460,5 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
     filterTanggal.value = '';
     filterRiwayat();
   });
+
+  filterRiwayat();
 });
 </script>

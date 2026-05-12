@@ -1,7 +1,7 @@
-<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
+﻿<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
   <div class="pr-md-3">
-    <h4 class="mb-1 text-gray-800">Backup Data Perizinan</h4>
-    <div class="small-text">Export data izin ke CSV dan hapus data lama.</div>
+    <h4 class="mb-1 text-dark">Backup Data Perizinan</h4>
+    <div class="text-muted small">Export data izin ke CSV dan hapus data lama.</div>
   </div>
   <div class="mt-3 mt-md-0">
     <a href="<?php echo site_url('admin/perizinan'); ?>" class="btn btn-outline-primary btn-sm">Kembali</a>
@@ -25,32 +25,32 @@
   <div class="col-lg-6">
 
     <!-- Form Pilih Periode -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-header bg-white"><strong>Pilih Periode Backup</strong></div>
+    <div class="card mb-4">
+      <div class="card-header"><strong>Pilih Periode Backup</strong></div>
       <div class="card-body">
         <form method="get" action="<?php echo site_url('admin/backup'); ?>" id="form_preview">
-          <div class="form-row">
-            <div class="col-md-6 mb-3">
+          <div class="row align-items-end">
+            <div class="col-md-5 mb-2">
               <label class="small mb-1">Dari Tanggal</label>
-              <input type="date" name="tgl_dari" class="form-control"
-                     value="<?php echo html_escape($tgl_dari); ?>" required>
+              <input type="date" name="tgl_dari" class="form-control form-control-sm" value="<?php echo html_escape($tgl_dari); ?>" required>
             </div>
-            <div class="col-md-6 mb-3">
+            <div class="col-md-5 mb-2">
               <label class="small mb-1">Sampai Tanggal</label>
-              <input type="date" name="tgl_sampai" class="form-control"
-                     value="<?php echo html_escape($tgl_sampai); ?>" required>
+              <input type="date" name="tgl_sampai" class="form-control form-control-sm" value="<?php echo html_escape($tgl_sampai); ?>" required>
+            </div>
+            <div class="col-md-2 mb-2">
+              <button type="submit" class="btn btn-sm btn-primary btn-block">Filter</button>
             </div>
           </div>
-          <small class="text-muted d-block mb-3">Maksimal rentang 3 bulan per backup.</small>
-          <button type="submit" class="btn btn-primary btn-sm">Cek Jumlah Data</button>
+          <small class="text-muted d-block">Maksimal rentang 3 bulan per backup.</small>
         </form>
       </div>
     </div>
 
     <!-- Preview & Aksi -->
     <?php if ($jumlah !== null): ?>
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-white"><strong>Hasil Pengecekan</strong></div>
+      <div class="card mb-4">
+        <div class="card-header"><strong>Hasil Pengecekan</strong></div>
         <div class="card-body">
           <p class="mb-1">Periode: <strong><?php echo html_escape($tgl_dari); ?></strong> s/d <strong><?php echo html_escape($tgl_sampai); ?></strong></p>
           <p class="mb-3">Jumlah data: <strong><?php echo $jumlah; ?> izin</strong></p>
@@ -95,8 +95,8 @@
 
   <!-- Panduan -->
   <div class="col-lg-6">
-    <div class="card shadow-sm">
-      <div class="card-header bg-white"><strong>Panduan Backup</strong></div>
+    <div class="card">
+      <div class="card-header"><strong>Panduan Backup</strong></div>
       <div class="card-body">
         <ol class="pl-3 small">
           <li class="mb-2">Pilih rentang tanggal periode yang ingin dibackup (maks. 3 bulan).</li>

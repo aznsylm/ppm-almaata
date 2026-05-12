@@ -75,12 +75,16 @@ $route['admin/backup/download'] = 'admin/backup/download';
 $route['admin/backup/hapus'] = 'admin/backup/hapus';
 
 $route['admin/kehadiran'] = 'admin/kehadiran/index';
+$route['admin/kehadiran/export_rekap'] = 'admin/kehadiran/export_rekap';
+$route['admin/kehadiran/export_detail/(:any)'] = 'admin/kehadiran/export_detail/$1';
+$route['admin/kehadiran/bulk_update'] = 'admin/kehadiran/bulk_update';
 $route['admin/kehadiran/detail/(:any)'] = 'admin/kehadiran/detail/$1';
 $route['admin/kehadiran/finalisasi'] = 'admin/kehadiran/finalisasi';
 $route['admin/kehadiran/jadwal'] = 'admin/kehadiran/jadwal';
 $route['admin/kehadiran/update_jadwal'] = 'admin/kehadiran/update_jadwal';
 $route['admin/kehadiran/manual'] = 'admin/kehadiran/manual';
 $route['admin/kehadiran/manual_store'] = 'admin/kehadiran/manual_store';
+$route['admin/kehadiran/manual_batch'] = 'admin/kehadiran/manual_batch';
 $route['admin/kehadiran/manual_edit/(:num)'] = 'admin/kehadiran/manual_edit/$1';
 $route['admin/kehadiran/manual_hapus/(:num)'] = 'admin/kehadiran/manual_hapus/$1';
 
@@ -88,6 +92,7 @@ $route['user/dashboard'] = 'user/dashboard/index';
 $route['user/presensi'] = 'user/presensi/index';
 $route['user/presensi/checkin'] = 'user/presensi/checkin';
 $route['user/presensi/history'] = 'user/presensi/history';
+$route['user/presensi/export_detail'] = 'user/presensi/export_detail';
 $route['user/perizinan'] = 'user/perizinan/index';
 $route['user/perizinan/submit'] = 'user/perizinan/submit';
 $route['user/perizinan/download/(:any)'] = 'user/perizinan/download/$1';
@@ -95,3 +100,13 @@ $route['user/perizinan/upload-surat/(:any)'] = 'user/perizinan/upload_surat/$1';
 $route['user/perizinan/upload-dokumentasi/(:any)'] = 'user/perizinan/upload_dokumentasi/$1';
 $route['user/perizinan/dokumentasi/(:any)'] = 'user/perizinan/dokumentasi/$1';
 $route['user/perizinan/cetak/(:any)'] = 'user/perizinan/cetak/$1';
+
+// ROUTES PERIODE HAID
+$route['admin/periode-haid'] = 'admin/periode_haid/index';
+$route['admin/periode-haid/create'] = 'admin/periode_haid/create';
+$route['admin/periode-haid/store'] = 'admin/periode_haid/store';
+$route['admin/periode-haid/edit/(:num)'] = 'admin/periode_haid/edit/$1';
+$route['admin/periode-haid/update/(:num)'] = 'admin/periode_haid/update/$1';
+$route['admin/periode-haid/delete/(:num)'] = 'admin/periode_haid/delete/$1';
+
+$route['user/periode-haid'] = 'user/periode_haid/index';

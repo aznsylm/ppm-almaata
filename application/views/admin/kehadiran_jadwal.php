@@ -1,14 +1,21 @@
+﻿<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
+  <div class="pr-md-3">
+    <h4 class="mb-1 text-dark">Kelola Jadwal Kehadiran</h4>
+    <div class="text-muted small">Atur waktu mulai dan selesai untuk setiap kegiatan.</div>
+  </div>
+  <div class="mt-3 mt-md-0">
+    <a href="<?php echo site_url('admin/kehadiran'); ?>" class="btn btn-sm btn-outline-secondary">Kembali</a>
+  </div>
+</div>
+
 <div class="container-fluid">
   <div class="row">
     <div class="col-12">
       <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Kelola Jadwal Kehadiran</h5>
-          <a href="<?php echo site_url('admin/kehadiran'); ?>" class="btn btn-sm btn-secondary">Kembali</a>
+        <div class="card-header">
+          <h5 class="card-title mb-0">Jadwal Kegiatan</h5>
         </div>
         <div class="card-body">
-          <p class="text-muted mb-4">Atur waktu mulai dan selesai untuk setiap kegiatan. Centang Aktif untuk mengaktifkan kehadiran.</p>
-
           <form method="post" action="<?php echo site_url('admin/kehadiran/update_jadwal'); ?>">
             <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
             

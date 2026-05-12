@@ -8,18 +8,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
   <style>
-    .text-gray-800 { color: #343a40 !important; }
-    .small-text { color: #6c757d; font-size: .875rem; }
-    .badge-soft { border-radius: 999px; padding: .35rem .7rem; }
-    .content-card { border-radius: .5rem; }
     .main-sidebar .brand-link { border-bottom: 1px solid rgba(255,255,255,.08); }
     .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active {
       background-color: rgba(255,255,255,.15);
       color: #fff;
     }
-    .card-border-left-primary { border-left: .25rem solid #007bff !important; }
-    .card-border-left-success { border-left: .25rem solid #28a745 !important; }
-    .card-border-left-warning { border-left: .25rem solid #ffc107 !important; }
   </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -33,6 +26,7 @@ if (!empty($authUser) && $authUser['role'] === 'admin') {
     array('label' => 'Data Santri', 'url' => site_url('admin/santri'), 'icon' => 'fa-users', 'match' => 'admin/santri'),
     array('label' => 'Data Perizinan', 'url' => site_url('admin/perizinan'), 'icon' => 'fa-clipboard-list', 'match' => 'admin/perizinan'),
     array('label' => 'Kehadiran', 'url' => site_url('admin/kehadiran'), 'icon' => 'fa-check-circle', 'match' => 'admin/kehadiran'),
+    array('label' => 'Periode Haid', 'url' => site_url('admin/periode-haid'), 'icon' => 'fa-calendar-alt', 'match' => 'admin/periode-haid'),
     array('label' => 'Raising', 'url' => 'https://raising.almaata.ac.id/', 'icon' => 'fa-external-link-alt', 'target' => '_blank', 'rel' => 'noopener noreferrer'),
     array('label' => 'PPM Alma Ata', 'url' => 'https://ponpesmahasiswa.almaata.ac.id/', 'icon' => 'fa-external-link-alt', 'target' => '_blank', 'rel' => 'noopener noreferrer'),
   );
@@ -41,6 +35,7 @@ if (!empty($authUser) && $authUser['role'] === 'admin') {
     array('label' => 'Dashboard', 'url' => site_url('user/dashboard'), 'icon' => 'fa-home', 'match' => 'user/dashboard'),
     array('label' => 'Presensi', 'url' => site_url('user/presensi'), 'icon' => 'fa-check-circle', 'match' => 'user/presensi'),
     array('label' => 'Perizinan', 'url' => site_url('user/perizinan'), 'icon' => 'fa-file-signature', 'match' => 'user/perizinan'),
+    array('label' => 'Data Haid Saya', 'url' => site_url('user/periode-haid'), 'icon' => 'fa-heartbeat', 'match' => 'user/periode-haid'),
     array('label' => 'Raising', 'url' => 'https://raising.almaata.ac.id/', 'icon' => 'fa-external-link-alt', 'target' => '_blank', 'rel' => 'noopener noreferrer'),
     array('label' => 'PPM Alma Ata', 'url' => 'https://ponpesmahasiswa.almaata.ac.id/', 'icon' => 'fa-external-link-alt', 'target' => '_blank', 'rel' => 'noopener noreferrer'),
   );
@@ -105,7 +100,7 @@ if (!empty($authUser) && $authUser['role'] === 'admin') {
           <div class="alert alert-danger"><?php echo $this->session->flashdata('error'); ?></div>
         <?php endif; ?>
 
-        <div class="card content-card">
+        <div class="card">
           <div class="card-body">
             <?php $this->load->view($content_view, isset($content_data) ? $content_data : array()); ?>
           </div>

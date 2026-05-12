@@ -282,18 +282,33 @@ class User_model extends CI_Model
             return array('ok' => FALSE, 'message' => 'Data santri tidak ditemukan.');
         }
 
+        $nim = $santri['nim'];
+
         $this->db->trans_begin();
 
-        $okUser = $this->db->where('id', (int) $id)->delete($this->table);
-        $okSantri = $this->db->where('nim', $santri['nim'])->delete('mssantri');
+        // Hapus data presensi
+        $this->db->where('nim', $nim)->delete('presensi');
+        $this->db->where('nim', $nim)->delete('presensi_kartu');
 
-        if (!$okUser || !$okSantri) {
+        // Hapus data izin (ijindetail dulu karena foreign key)
+        $ijin_ids = $this->db->select('id')->where('nim', $nim)->get('ijin')->result_array();
+        if (!empty($ijin_ids)) {
+            $ids = array_column($ijin_ids, 'id');
+            $this->db->where_in('id', $ids)->delete('ijindetail');
+            $this->db->where('nim', $nim)->delete('ijin');
+        }
+
+        // Hapus dari mssantri dan users
+        $this->db->where('nim', $nim)->delete('mssantri');
+        $okUser = $this->db->where('id', (int) $id)->delete($this->table);
+
+        if ($this->db->trans_status() === FALSE || !$okUser) {
             $this->db->trans_rollback();
             return array('ok' => FALSE, 'message' => 'Gagal menghapus data santri.');
         }
 
         $this->db->trans_commit();
-        return array('ok' => TRUE, 'message' => 'Santri berhasil dihapus.');
+        return array('ok' => TRUE, 'message' => 'Santri dan seluruh data terkait berhasil dihapus.');
     }
 
     private function build_santri_admin_query($filters = array())

@@ -204,7 +204,7 @@ class Perizinan extends MY_Controller
         }
 
         // Buat pengajuan
-        $id = $this->Perizinan_model->create_pengajuan($auth['nim'], array(
+        $create_result = $this->Perizinan_model->create_pengajuan($auth['nim'], array(
             'tipe_izin'      => $tipe_izin,
             'sub_kategori'   => $tipe_izin === '3' ? $sub_kategori_list : array(),
             'tgl_mulai'      => $tgl_mulai,
@@ -214,7 +214,21 @@ class Perizinan extends MY_Controller
             'smt'            => $smt,
         ));
 
-        if (!$id) {
+        $id = '';
+        if (is_array($create_result)) {
+            if (!empty($create_result['ok']) && !empty($create_result['id'])) {
+                $id = (string) $create_result['id'];
+            } else {
+                $message = !empty($create_result['message']) ? $create_result['message'] : 'Gagal menyimpan pengajuan izin.';
+                $this->session->set_flashdata('error', $message);
+                redirect('user/perizinan');
+                return;
+            }
+        } else {
+            $id = trim((string) $create_result);
+        }
+
+        if ($id === '') {
             $this->session->set_flashdata('error', 'Gagal menyimpan pengajuan izin.');
             redirect('user/perizinan');
             return;

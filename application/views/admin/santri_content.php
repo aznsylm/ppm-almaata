@@ -1,9 +1,9 @@
-<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
+﻿<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
   <div class="pr-md-3">
     <h4 class="mb-1 text-dark">Data Santri</h4>
     <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
-      <div class="small-text">Data santri pondok berdasarkan data mahasiswa yang sudah ada di Universitas Alma Ata.</div>
-      <div class="small-text font-weight-bold ml-md-3">Saat ini ada <?php echo (int) (isset($pagination['total_rows']) ? $pagination['total_rows'] : 0); ?> santri</div>
+      <div class="text-muted small">Data santri pondok berdasarkan data mahasiswa yang sudah ada di Universitas Alma Ata.</div>
+      <div class="text-dark small font-weight-bold ml-md-3">Saat ini ada <?php echo (int) (isset($pagination['total_rows']) ? $pagination['total_rows'] : 0); ?> santri</div>
     </div>
   </div>
   <div class="mt-3 mt-md-0 d-flex flex-column flex-sm-row align-self-stretch">
@@ -15,7 +15,7 @@
 $hasActiveFilter = !empty($filters['prodi']) || !empty($filters['lantai']) || !empty($filters['angkatan']) || !empty($filters['q']);
 ?>
 
-<div class="card card-outline card-primary mb-4">
+<div class="card mb-4">
   <div class="card-header d-flex justify-content-start align-items-center">
     <strong>Tambah Santri</strong>
     <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseTambahSantri" aria-expanded="false" aria-controls="collapseTambahSantri">
@@ -24,71 +24,64 @@ $hasActiveFilter = !empty($filters['prodi']) || !empty($filters['lantai']) || !e
   </div>
   <div id="collapseTambahSantri" class="collapse">
     <div class="card-body">
-    <form method="post" action="<?php echo site_url('admin/santri/store'); ?>" class="form-row">
-      <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
-      <div class="form-group col-md-5">
-        <label>NIM</label>
-        <input type="text" name="nim" class="form-control" maxlength="15" required>
-      </div>
-      <div class="form-group col-md-5">
-        <label>Kamar</label>
-        <input type="text" name="kamar" class="form-control" maxlength="20" required>
-      </div>
-      <div class="form-group col-md-2 d-flex align-items-end">
-        <button type="submit" class="btn btn-primary btn-block">Tambah</button>
-      </div>
-    </form>
+      <form method="post" action="<?php echo site_url('admin/santri/store'); ?>" class="form-row">
+        <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
+        <div class="form-group col-md-5">
+          <label>NIM</label>
+          <input type="text" name="nim" class="form-control" maxlength="15" required>
+        </div>
+        <div class="form-group col-md-5">
+          <label>Kamar</label>
+          <input type="text" name="kamar" class="form-control" maxlength="20" required>
+        </div>
+        <div class="form-group col-md-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary btn-block">Tambah</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
-<div class="card card-outline card-secondary mb-4">
-  <div class="card-header d-flex justify-content-start align-items-center">
-    <strong>Filter dan Pencarian</strong>
-    <button type="button" class="btn btn-tool" data-toggle="collapse" data-target="#collapseFilterSantri" aria-expanded="<?php echo $hasActiveFilter ? 'true' : 'false'; ?>" aria-controls="collapseFilterSantri">
-      <i class="fas fa-chevron-down"></i>
-    </button>
+<div class="card mb-4">
+  <div class="card-header">
+    <h5 class="card-title mb-0">Filter dan Pencarian</h5>
   </div>
-  <div id="collapseFilterSantri" class="collapse<?php echo $hasActiveFilter ? ' show' : ''; ?>">
-    <div class="card-body">
-    <form method="get" action="<?php echo site_url('admin/santri'); ?>" class="form-row">
-      <div class="form-group col-md-3">
-        <label>Prodi</label>
-        <select name="prodi" class="form-control">
-          <option value="">Semua Prodi</option>
-          <?php foreach ((isset($filter_options['prodi']) ? $filter_options['prodi'] : array()) as $prodi): ?>
-            <option value="<?php echo html_escape($prodi); ?>" <?php echo ((isset($filters['prodi']) ? $filters['prodi'] : '') === $prodi) ? 'selected' : ''; ?>><?php echo html_escape($prodi); ?></option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-      <div class="form-group col-md-2">
-        <label>Lantai</label>
-        <select name="lantai" class="form-control">
-          <option value="">Semua Lantai</option>
-          <option value="1" <?php echo ((isset($filters['lantai']) ? $filters['lantai'] : '') === '1') ? 'selected' : ''; ?>>Lantai 1</option>
-          <option value="2" <?php echo ((isset($filters['lantai']) ? $filters['lantai'] : '') === '2') ? 'selected' : ''; ?>>Lantai 2</option>
-          <option value="3" <?php echo ((isset($filters['lantai']) ? $filters['lantai'] : '') === '3') ? 'selected' : ''; ?>>Lantai 3</option>
-        </select>
-      </div>
-      <div class="form-group col-md-2">
-        <label>Angkatan</label>
-        <select name="angkatan" class="form-control">
-          <option value="">Semua Angkatan</option>
-          <?php foreach ((isset($filter_options['angkatan']) ? $filter_options['angkatan'] : array()) as $angkatan): ?>
-            <option value="<?php echo html_escape($angkatan); ?>" <?php echo ((isset($filters['angkatan']) ? $filters['angkatan'] : '') === $angkatan) ? 'selected' : ''; ?>><?php echo html_escape($angkatan); ?></option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-      <div class="form-group col-md-3">
-        <label>Search (NIM/Nama/Alamat)</label>
-        <input type="text" name="q" class="form-control" value="<?php echo html_escape(isset($filters['q']) ? $filters['q'] : ''); ?>" placeholder="Ketik kata kunci...">
-      </div>
-      <div class="form-group col-md-2 d-flex align-items-end">
-        <button type="submit" class="btn btn-primary btn-block mr-2">Filter</button>
-        <a href="<?php echo site_url('admin/santri'); ?>" class="btn btn-light btn-block">Reset</a>
+  <div class="card-body">
+    <form method="get" action="<?php echo site_url('admin/santri'); ?>" class="mb-3">
+      <div class="row">
+        <div class="col-md-3 mb-2">
+          <select name="prodi" class="form-control form-control-sm">
+            <option value="">Semua Prodi</option>
+            <?php foreach ((isset($filter_options['prodi']) ? $filter_options['prodi'] : array()) as $prodi): ?>
+              <option value="<?php echo html_escape($prodi); ?>" <?php echo ((isset($filters['prodi']) ? $filters['prodi'] : '') === $prodi) ? 'selected' : ''; ?>><?php echo html_escape($prodi); ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div class="col-md-2 mb-2">
+          <select name="lantai" class="form-control form-control-sm">
+            <option value="">Semua Lantai</option>
+            <option value="1" <?php echo ((isset($filters['lantai']) ? $filters['lantai'] : '') === '1') ? 'selected' : ''; ?>>Lantai 1</option>
+            <option value="2" <?php echo ((isset($filters['lantai']) ? $filters['lantai'] : '') === '2') ? 'selected' : ''; ?>>Lantai 2</option>
+            <option value="3" <?php echo ((isset($filters['lantai']) ? $filters['lantai'] : '') === '3') ? 'selected' : ''; ?>>Lantai 3</option>
+          </select>
+        </div>
+        <div class="col-md-2 mb-2">
+          <select name="angkatan" class="form-control form-control-sm">
+            <option value="">Semua Angkatan</option>
+            <?php foreach ((isset($filter_options['angkatan']) ? $filter_options['angkatan'] : array()) as $angkatan): ?>
+              <option value="<?php echo html_escape($angkatan); ?>" <?php echo ((isset($filters['angkatan']) ? $filters['angkatan'] : '') === $angkatan) ? 'selected' : ''; ?>><?php echo html_escape($angkatan); ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div class="col-md-3 mb-2">
+          <input type="text" name="q" class="form-control form-control-sm" value="<?php echo html_escape(isset($filters['q']) ? $filters['q'] : ''); ?>" placeholder="Cari NIM / Nama / Alamat">
+        </div>
+        <div class="col-md-2 mb-2 d-flex gap-2">
+          <button type="submit" class="btn btn-sm btn-primary flex-fill">Filter</button>
+          <a href="<?php echo site_url('admin/santri'); ?>" class="btn btn-sm btn-outline-secondary flex-fill text-center">Reset</a>
+        </div>
       </div>
     </form>
-    </div>
   </div>
 </div>
 

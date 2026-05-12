@@ -1,7 +1,7 @@
-<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
+﻿<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
   <div class="pr-md-3">
-    <h4 class="mb-1 text-gray-800">Perizinan Santri</h4>
-    <div class="small-text">Ajukan izin, unduh surat, upload, dan pantau status.</div>
+    <h4 class="mb-1 text-dark">Perizinan Santri</h4>
+    <div class="text-muted small">Ajukan izin, unduh surat, upload, dan pantau status.</div>
   </div>
   <div class="mt-3 mt-md-0">
     <a href="<?php echo site_url('user/dashboard'); ?>" class="btn btn-outline-primary btn-sm">Dashboard</a>
@@ -24,8 +24,8 @@
 <div class="row">
   <!-- ===================== FORM PENGAJUAN ===================== -->
   <div class="col-lg-5 mb-4">
-    <div class="card shadow-sm">
-      <div class="card-header bg-white"><strong>Ajukan Izin</strong></div>
+    <div class="card">
+      <div class="card-header"><strong>Ajukan Izin</strong></div>
       <div class="card-body">
         <form method="post" action="<?php echo site_url('user/perizinan/submit'); ?>" enctype="multipart/form-data" id="form_pengajuan">
           <input type="hidden" name="<?php echo $this->security->get_csrf_token_name(); ?>" value="<?php echo $this->security->get_csrf_hash(); ?>">
@@ -113,8 +113,8 @@
 
   <!-- ===================== RIWAYAT IZIN ===================== -->
   <div class="col-lg-7 mb-4">
-    <div class="card shadow-sm">
-      <div class="card-header bg-white"><strong>Riwayat Izin</strong></div>
+    <div class="card">
+      <div class="card-header"><strong>Riwayat Izin</strong></div>
       <div class="card-body p-0">
         <div class="table-responsive">
           <table class="table table-hover mb-0">

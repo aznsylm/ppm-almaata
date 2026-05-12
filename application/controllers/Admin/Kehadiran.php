@@ -27,15 +27,24 @@ class Kehadiran extends MY_Controller
             'kamar'        => trim((string) $this->input->get('kamar', TRUE)),
         );
 
+        $per_page = 20;
+        $page     = max(1, (int) $this->input->get('page', TRUE));
+
         $rows    = $this->Presensi_model->get_rekap_admin($minggu['mulai'], $minggu['selesai'], $filters);
         $preview = array();
 
-        // Jika belum ada rekap final untuk minggu ini, tampilkan preview
         if (empty($rows)) {
-            $preview = $this->Presensi_model->preview_rekap_minggu($minggu['mulai'], $minggu['selesai']);
+            $preview = $this->Presensi_model->preview_rekap_minggu($minggu['mulai'], $minggu['selesai'], null, $filters);
         }
 
-        // Dashboard Analytics
+        // Gabung rows + preview, lalu paginate manual
+        $source     = !empty($rows) ? $rows : $preview;
+        $total      = count($source);
+        $total_pages = max(1, (int) ceil($total / $per_page));
+        $page       = min($page, $total_pages);
+        $offset     = ($page - 1) * $per_page;
+        $paged      = array_slice($source, $offset, $per_page);
+
         $analytics = $this->get_dashboard_analytics($minggu['mulai'], $minggu['selesai']);
 
         $data = array(
@@ -44,12 +53,18 @@ class Kehadiran extends MY_Controller
             'content_data' => array(
                 'minggu'       => $minggu,
                 'minggu_param' => $minggu_param,
-                'rows'         => $rows,
-                'preview'      => $preview,
+                'rows'         => !empty($rows) ? $paged : array(),
+                'preview'      => empty($rows)  ? $paged : array(),
                 'filters'      => $filters,
                 'jadwal_list'  => $this->Presensi_model->get_all_jadwal(),
                 'kamar_list'   => $this->get_kamar_list(),
                 'analytics'    => $analytics,
+                'pagination'   => array(
+                    'page'        => $page,
+                    'per_page'    => $per_page,
+                    'total'       => $total,
+                    'total_pages' => $total_pages,
+                ),
             ),
         );
 
@@ -84,12 +99,14 @@ class Kehadiran extends MY_Controller
             $kartu_lalu ? $kartu_lalu['kartu_ngaji']  : 'putih'
         );
 
-        // Ambil nama santri
+        // Ambil nama santri dari users (konsisten dengan master data)
         $santri = $this->db
-            ->select('TRIM(m.NIMHSMSMHS) AS nim, m.NMMHSMSMHS AS nama, s.kmr AS kamar', FALSE)
-            ->from('sim_akademik.msmhs m')
-            ->join('mssantri s', 'TRIM(s.nim) = TRIM(m.NIMHSMSMHS)', 'left')
-            ->where('TRIM(m.NIMHSMSMHS)', $nim)
+            ->select('TRIM(u.nim) AS nim, m.NMMHSMSMHS AS nama, TRIM(s.kmr) AS kamar', FALSE)
+            ->from('users u')
+            ->join('sim_akademik.msmhs m', 'TRIM(m.NIMHSMSMHS) = u.nim', 'left')
+            ->join('mssantri s', 'TRIM(s.nim) = u.nim', 'left')
+            ->where('u.role', 'user')
+            ->where('u.nim', $nim)
             ->get()->row_array();
 
         $data = array(
@@ -117,86 +134,56 @@ class Kehadiran extends MY_Controller
     public function export_rekap()
     {
         $this->require_role(array('admin'));
-        
+
         $minggu_param = trim((string) $this->input->get('minggu', TRUE));
         $minggu = $minggu_param !== '' && $this->is_valid_date($minggu_param)
             ? Presensi_model::get_minggu_aktif($minggu_param)
             : Presensi_model::get_minggu_aktif();
 
-        // Ambil data (finalisasi atau preview)
-        $rows = $this->Presensi_model->get_rekap_admin($minggu['mulai'], $minggu['selesai'], array());
-        
-        if (empty($rows)) {
-            // Jika belum difinalisasi, gunakan preview
-            $preview = $this->Presensi_model->preview_rekap_minggu($minggu['mulai'], $minggu['selesai']);
-            $dataSource = $preview;
-            $status = 'Preview (Belum Difinalisasi)';
-        } else {
-            $dataSource = $rows;
-            $status = 'Sudah Difinalisasi';
+        $preview = $this->Presensi_model->preview_rekap_minggu($minggu['mulai'], $minggu['selesai']);
+
+        if (empty($preview)) {
+            $this->session->set_flashdata('error', 'Tidak ada data santri.');
+            redirect('admin/kehadiran');
+            return;
         }
 
-        // Generate Excel
-        $this->generate_excel_rekap($dataSource, $minggu, $status);
-    }
+        @ini_set('memory_limit', '256M');
+        @set_time_limit(120);
 
-    private function generate_excel_rekap($data, $minggu, $status)
-    {
-        $filename = 'Rekap_Kehadiran_' . date('Y-m-d', strtotime($minggu['mulai'])) . '.xls';
-        
-        header('Content-Type: application/vnd.ms-excel');
+        $filename = 'rekap_kehadiran_' . $minggu['mulai'] . '_sd_' . $minggu['selesai'] . '.csv';
+
+        header('Content-Type: text/csv; charset=UTF-8');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Pragma: no-cache');
         header('Expires: 0');
 
-        echo "<html xmlns:x='urn:schemas-microsoft-com:office:excel'>";
-        echo "<head>";
-        echo "<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>";
-        echo "<style>";
-        echo "table { border-collapse: collapse; }";
-        echo "th, td { border: 1px solid #000; padding: 5px; }";
-        echo "th { background-color: #4CAF50; color: white; font-weight: bold; }";
-        echo ".header { font-size: 16px; font-weight: bold; }";
-        echo "</style>";
-        echo "</head>";
-        echo "<body>";
-        
-        // Header
-        echo "<table>";
-        echo "<tr><td colspan='7' class='header'>REKAP KEHADIRAN MINGGUAN</td></tr>";
-        echo "<tr><td colspan='7'>&nbsp;</td></tr>";
-        echo "<tr><td><strong>Periode</strong></td><td colspan='6'>" . date('d M Y', strtotime($minggu['mulai'])) . " - " . date('d M Y', strtotime($minggu['selesai'])) . "</td></tr>";
-        echo "<tr><td><strong>Status</strong></td><td colspan='6'>" . htmlspecialchars($status) . "</td></tr>";
-        echo "<tr><td><strong>Total Santri</strong></td><td colspan='6'>" . count($data) . "</td></tr>";
-        echo "<tr><td colspan='7'>&nbsp;</td></tr>";
-        
-        // Table header
-        echo "<tr>";
-        echo "<th>NIM</th>";
-        echo "<th>Nama</th>";
-        echo "<th>Kamar</th>";
-        echo "<th>Alpha Jamaah</th>";
-        echo "<th>Kartu Jamaah</th>";
-        echo "<th>Alpha Ngaji</th>";
-        echo "<th>Kartu Ngaji</th>";
-        echo "</tr>";
-        
-        // Data rows
-        foreach ($data as $row) {
-            echo "<tr>";
-            echo "<td>" . htmlspecialchars($row['nim']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['nama'] ?? 'N/A') . "</td>";
-            echo "<td>" . htmlspecialchars($row['kamar'] ?? '-') . "</td>";
-            echo "<td style='text-align:center;'>" . (int)$row['alpha_jamaah'] . "</td>";
-            echo "<td style='text-align:center;'>" . htmlspecialchars(ucfirst($row['kartu_jamaah'])) . "</td>";
-            echo "<td style='text-align:center;'>" . (int)$row['alpha_ngaji'] . "</td>";
-            echo "<td style='text-align:center;'>" . htmlspecialchars(ucfirst($row['kartu_ngaji'])) . "</td>";
-            echo "</tr>";
+        $output = fopen('php://output', 'w');
+        fputs($output, "\xEF\xBB\xBF");
+
+        // Header info
+        fputcsv($output, array('Rekap Kehadiran Mingguan'), ';');
+        fputcsv($output, array('Periode', date('d M Y', strtotime($minggu['mulai'])) . ' - ' . date('d M Y', strtotime($minggu['selesai']))), ';');
+        fputcsv($output, array('Total Santri', count($preview)), ';');
+        fputcsv($output, array(), ';');
+
+        // Header kolom
+        fputcsv($output, array('NIM', 'Nama', 'Kamar', 'Alpha Jamaah', 'Kartu Jamaah', 'Alpha Ngaji', 'Kartu Ngaji'), ';');
+
+        // Data
+        foreach ($preview as $row) {
+            fputcsv($output, array(
+                $row['nim'],
+                $row['nama'] ?? 'N/A',
+                $row['kamar'] ?? '-',
+                (int) $row['alpha_jamaah'],
+                ucfirst($row['kartu_jamaah']),
+                (int) $row['alpha_ngaji'],
+                ucfirst($row['kartu_ngaji']),
+            ), ';');
         }
-        
-        echo "</table>";
-        echo "</body>";
-        echo "</html>";
+
+        fclose($output);
         exit;
     }
 
@@ -206,7 +193,7 @@ class Kehadiran extends MY_Controller
     public function export_detail($nim = null)
     {
         $this->require_role(array('admin'));
-        
+
         $nim = trim((string) $nim);
         $minggu_param = trim((string) $this->input->get('minggu', TRUE));
         $minggu = $minggu_param !== '' && $this->is_valid_date($minggu_param)
@@ -218,18 +205,16 @@ class Kehadiran extends MY_Controller
             return;
         }
 
-        // Get data
-        $detail = $this->Presensi_model->get_detail_presensi_minggu($nim, $minggu['mulai'], $minggu['selesai']);
-        $alpha = $this->Presensi_model->hitung_alpha($nim, $minggu['mulai'], $minggu['selesai']);
+        $detail     = $this->Presensi_model->get_detail_presensi_minggu($nim, $minggu['mulai'], $minggu['selesai']);
+        $alpha      = $this->Presensi_model->hitung_alpha($nim, $minggu['mulai'], $minggu['selesai']);
         $kartu_lalu = $this->Presensi_model->get_kartu_minggu_sebelumnya($nim, $minggu['mulai']);
-        $kartu = $this->Presensi_model->hitung_kartu(
+        $kartu      = $this->Presensi_model->hitung_kartu(
             $alpha['alpha_jamaah'],
             $alpha['alpha_ngaji'],
             $kartu_lalu ? $kartu_lalu['kartu_jamaah'] : 'putih',
-            $kartu_lalu ? $kartu_lalu['kartu_ngaji'] : 'putih'
+            $kartu_lalu ? $kartu_lalu['kartu_ngaji']  : 'putih'
         );
 
-        // Get santri info
         $santri = $this->db
             ->select('TRIM(m.NIMHSMSMHS) AS nim, m.NMMHSMSMHS AS nama, s.kmr AS kamar', FALSE)
             ->from('sim_akademik.msmhs m')
@@ -237,77 +222,49 @@ class Kehadiran extends MY_Controller
             ->where('TRIM(m.NIMHSMSMHS)', $nim)
             ->get()->row_array();
 
-        // Generate Excel
-        $this->generate_excel_detail($santri, $detail, $alpha, $kartu, $minggu);
-    }
+        @ini_set('memory_limit', '256M');
+        @set_time_limit(120);
 
-    private function generate_excel_detail($santri, $detail, $alpha, $kartu, $minggu)
-    {
-        $filename = 'Kehadiran_' . $santri['nim'] . '_' . date('Y-m-d', strtotime($minggu['mulai'])) . '.xls';
-        
-        header('Content-Type: application/vnd.ms-excel');
+        $filename = 'kehadiran_' . $nim . '_' . $minggu['mulai'] . '_sd_' . $minggu['selesai'] . '.csv';
+
+        header('Content-Type: text/csv; charset=UTF-8');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Pragma: no-cache');
         header('Expires: 0');
 
-        echo "<html xmlns:x='urn:schemas-microsoft-com:office:excel'>";
-        echo "<head>";
-        echo "<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>";
-        echo "<style>";
-        echo "table { border-collapse: collapse; }";
-        echo "th, td { border: 1px solid #000; padding: 5px; }";
-        echo "th { background-color: #4CAF50; color: white; font-weight: bold; }";
-        echo ".header { font-size: 16px; font-weight: bold; }";
-        echo "</style>";
-        echo "</head>";
-        echo "<body>";
-        
-        // Header info
-        echo "<table>";
-        echo "<tr><td colspan='6' class='header'>LAPORAN KEHADIRAN SANTRI</td></tr>";
-        echo "<tr><td colspan='6'>&nbsp;</td></tr>";
-        echo "<tr><td><strong>NIM</strong></td><td colspan='5'>" . htmlspecialchars($santri['nim']) . "</td></tr>";
-        echo "<tr><td><strong>Nama</strong></td><td colspan='5'>" . htmlspecialchars($santri['nama']) . "</td></tr>";
-        echo "<tr><td><strong>Kamar</strong></td><td colspan='5'>" . htmlspecialchars($santri['kamar'] ?? '-') . "</td></tr>";
-        echo "<tr><td><strong>Periode</strong></td><td colspan='5'>" . date('d M Y', strtotime($minggu['mulai'])) . " - " . date('d M Y', strtotime($minggu['selesai'])) . "</td></tr>";
-        echo "<tr><td colspan='6'>&nbsp;</td></tr>";
-        
-        // Summary
-        echo "<tr><td colspan='6'><strong>RINGKASAN</strong></td></tr>";
-        echo "<tr><td><strong>Alpha Jamaah</strong></td><td colspan='5'>" . $alpha['alpha_jamaah'] . "</td></tr>";
-        echo "<tr><td><strong>Alpha Ngaji</strong></td><td colspan='5'>" . $alpha['alpha_ngaji'] . "</td></tr>";
-        echo "<tr><td><strong>Kartu Jamaah</strong></td><td colspan='5'>" . htmlspecialchars(ucfirst($kartu['kartu_jamaah'])) . "</td></tr>";
-        echo "<tr><td><strong>Kartu Ngaji</strong></td><td colspan='5'>" . htmlspecialchars(ucfirst($kartu['kartu_ngaji'])) . "</td></tr>";
-        echo "<tr><td colspan='6'>&nbsp;</td></tr>";
-        
-        // Detail header
-        echo "<tr><td colspan='6'><strong>DETAIL KEHADIRAN HARIAN</strong></td></tr>";
-        echo "<tr>";
-        echo "<th>Tanggal</th>";
-        echo "<th>Jamaah Maghrib</th>";
-        echo "<th>Jamaah Isya</th>";
-        echo "<th>Jamaah Subuh</th>";
-        echo "<th>Ngaji Maghrib</th>";
-        echo "<th>Ngaji Subuh</th>";
-        echo "</tr>";
-        
-        // Detail data
+        $output = fopen('php://output', 'w');
+        fputs($output, "\xEF\xBB\xBF");
+
+        // Info santri
+        fputcsv($output, array('Laporan Kehadiran Santri'), ';');
+        fputcsv($output, array('NIM',    $santri['nim']  ?? $nim), ';');
+        fputcsv($output, array('Nama',   $santri['nama'] ?? 'N/A'), ';');
+        fputcsv($output, array('Kamar',  $santri['kamar'] ?? '-'), ';');
+        fputcsv($output, array('Periode', date('d M Y', strtotime($minggu['mulai'])) . ' - ' . date('d M Y', strtotime($minggu['selesai']))), ';');
+        fputcsv($output, array(), ';');
+
+        // Ringkasan
+        fputcsv($output, array('Ringkasan'), ';');
+        fputcsv($output, array('Alpha Jamaah', (int) $alpha['alpha_jamaah']), ';');
+        fputcsv($output, array('Alpha Ngaji',  (int) $alpha['alpha_ngaji']), ';');
+        fputcsv($output, array('Kartu Jamaah', ucfirst($kartu['kartu_jamaah'])), ';');
+        fputcsv($output, array('Kartu Ngaji',  ucfirst($kartu['kartu_ngaji'])), ';');
+        fputcsv($output, array(), ';');
+
+        // Header detail
+        fputcsv($output, array('Tanggal', 'Jamaah Maghrib', 'Jamaah Isya', 'Jamaah Subuh', 'Ngaji Maghrib', 'Ngaji Subuh'), ';');
+
+        // Data detail harian
         foreach ($detail as $day) {
-            echo "<tr>";
-            echo "<td>" . date('d M Y (l)', strtotime($day['tanggal'])) . "</td>";
-            
-            foreach (['jamaah_maghrib', 'jamaah_isya', 'jamaah_subuh', 'ngaji_maghrib', 'ngaji_subuh'] as $kegiatan) {
-                $status = isset($day[$kegiatan]) ? $day[$kegiatan] : '-';
-                $displayStatus = ($status === 'hadir') ? 'Hadir' : (($status === 'izin') ? 'Izin' : (($status === 'alpha') ? 'Alpha' : '-'));
-                echo "<td style='text-align:center;'>" . htmlspecialchars($displayStatus) . "</td>";
+            $cols = array(date('d M Y (l)', strtotime($day['tanggal'])));
+            foreach (array('jamaah_maghrib', 'jamaah_isya', 'jamaah_subuh', 'ngaji_maghrib', 'ngaji_subuh') as $kegiatan) {
+                $s = isset($day[$kegiatan]) ? $day[$kegiatan] : '-';
+                $cols[] = ($s === 'hadir') ? 'Hadir' : (($s === 'izin') ? 'Izin' : (($s === 'alpha') ? 'Alpha' : '-'));
             }
-            
-            echo "</tr>";
+            fputcsv($output, $cols, ';');
         }
-        
-        echo "</table>";
-        echo "</body>";
-        echo "</html>";
+
+        fclose($output);
         exit;
     }
     public function bulk_update()
@@ -395,69 +352,6 @@ class Kehadiran extends MY_Controller
         // Redirect dengan parameter minggu yang benar
         redirect('admin/kehadiran/detail/' . $nim . '?minggu=' . ($minggu_param ?: $minggu_mulai));
     }
-    public function refinalisasi()
-    {
-        $this->require_role(array('admin'));
-
-        if ($this->input->method(TRUE) !== 'POST') {
-            show_404();
-            return;
-        }
-
-        $auth         = $this->current_user();
-        $minggu_mulai = trim((string) $this->input->post('minggu_mulai', TRUE));
-        $minggu_selesai = trim((string) $this->input->post('minggu_selesai', TRUE));
-
-        if (!$this->is_valid_date($minggu_mulai) || !$this->is_valid_date($minggu_selesai)) {
-            $this->session->set_flashdata('error', 'Periode minggu tidak valid.');
-            redirect('admin/kehadiran');
-            return;
-        }
-
-        // Hapus data lama terlebih dahulu
-        $this->db->where('minggu_mulai', $minggu_mulai)->delete('presensi_kartu');
-
-        // Finalisasi ulang dengan data terbaru
-        $result = $this->Presensi_model->finalisasi_rekap($minggu_mulai, $minggu_selesai, $auth['nim']);
-
-        if ($result['ok']) {
-            $this->session->set_flashdata('success', 'Re-finalisasi berhasil! Rekap minggu ' . $minggu_mulai . ' s/d ' . $minggu_selesai . ' telah diperbarui untuk ' . $result['total'] . ' santri.');
-        } else {
-            $this->session->set_flashdata('error', $result['message']);
-        }
-
-        redirect('admin/kehadiran?minggu=' . $minggu_mulai);
-    }
-    public function finalisasi()
-    {
-        $this->require_role(array('admin'));
-
-        if ($this->input->method(TRUE) !== 'POST') {
-            show_404();
-            return;
-        }
-
-        $auth         = $this->current_user();
-        $minggu_mulai = trim((string) $this->input->post('minggu_mulai', TRUE));
-        $minggu_selesai = trim((string) $this->input->post('minggu_selesai', TRUE));
-
-        if (!$this->is_valid_date($minggu_mulai) || !$this->is_valid_date($minggu_selesai)) {
-            $this->session->set_flashdata('error', 'Periode minggu tidak valid.');
-            redirect('admin/kehadiran');
-            return;
-        }
-
-        $result = $this->Presensi_model->finalisasi_rekap($minggu_mulai, $minggu_selesai, $auth['nim']);
-
-        if ($result['ok']) {
-            $this->session->set_flashdata('success', 'Rekap minggu ' . $minggu_mulai . ' s/d ' . $minggu_selesai . ' berhasil difinalisasi untuk ' . $result['total'] . ' santri.');
-        } else {
-            $this->session->set_flashdata('error', $result['message']);
-        }
-
-        redirect('admin/kehadiran?minggu=' . $minggu_mulai);
-    }
-
     // -------------------------------------------------------------------------
     // Kelola jadwal presensi
     // -------------------------------------------------------------------------
@@ -748,10 +642,12 @@ class Kehadiran extends MY_Controller
     private function get_kamar_list()
     {
         $rows = $this->db
-            ->select('DISTINCT TRIM(kmr) AS kamar', FALSE)
-            ->from('mssantri')
-            ->where('kmr IS NOT NULL', NULL, FALSE)
-            ->where('TRIM(kmr) !=', '')
+            ->select('DISTINCT TRIM(s.kmr) AS kamar', FALSE)
+            ->from('users u')
+            ->join('mssantri s', 'TRIM(s.nim) = u.nim', 'inner')
+            ->where('u.role', 'user')
+            ->where('s.kmr IS NOT NULL', NULL, FALSE)
+            ->where('TRIM(s.kmr) !=', '')
             ->order_by('kamar', 'ASC')
             ->get()->result_array();
         return array_column($rows, 'kamar');
@@ -760,9 +656,11 @@ class Kehadiran extends MY_Controller
     private function get_santri_list()
     {
         return $this->db
-            ->select('TRIM(m.NIMHSMSMHS) AS nim, m.NMMHSMSMHS AS nama, TRIM(s.kmr) AS kamar', FALSE)
-            ->from('sim_akademik.msmhs m')
-            ->join('mssantri s', 'TRIM(s.nim) = TRIM(m.NIMHSMSMHS)', 'inner')
+            ->select('TRIM(u.nim) AS nim, m.NMMHSMSMHS AS nama, TRIM(s.kmr) AS kamar', FALSE)
+            ->from('users u')
+            ->join('sim_akademik.msmhs m', 'TRIM(m.NIMHSMSMHS) = u.nim', 'left')
+            ->join('mssantri s', 'TRIM(s.nim) = u.nim', 'left')
+            ->where('u.role', 'user')
             ->order_by('m.NMMHSMSMHS', 'ASC')
             ->get()->result_array();
     }

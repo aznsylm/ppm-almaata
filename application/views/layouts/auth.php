@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="utf-8">
@@ -29,7 +29,7 @@
     <div class="login-logo">
       <a href="#"><b>PPM</b> Alma Ata</a>
     </div>
-    <div class="card card-outline card-primary">
+    <div class="card">
       <div class="card-body login-card-body">
         <?php $this->load->view($content_view, isset($content_data) ? $content_data : array()); ?>
       </div>

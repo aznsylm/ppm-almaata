@@ -1,67 +1,88 @@
-<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between mb-4">
-  <div class="pr-md-3">
-    <h4 class="mb-1 text-dark">Dashboard Admin</h4>
-    <div class="small-text">Kontrol data santri dan perizinan pondok.</div>
-  </div>
-  <div class="mt-3 mt-md-0 d-flex flex-column flex-sm-row align-self-stretch">
-    <a href="<?php echo site_url('auth/logout'); ?>" class="btn btn-outline-primary btn-sm text-center">
-      <i class="fas fa-sign-out-alt mr-1"></i>Logout
-    </a>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-xl-4 col-md-6 mb-4">
-    <div class="card shadow-sm h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-uppercase mb-1">Menu Cepat</div>
-            <div class="h5 mb-0 font-weight-bold text-dark">Dashboard</div>
-          </div>
-          <div class="col-auto"><i class="fas fa-tachometer-alt fa-2x text-gray-300"></i></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-4 col-md-6 mb-4">
-    <div class="card shadow-sm h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-uppercase mb-1">Menu Cepat</div>
-            <div class="h5 mb-0 font-weight-bold text-dark">Data Santri</div>
-          </div>
-          <div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-xl-4 col-md-6 mb-4">
-    <div class="card shadow-sm h-100 py-2">
-      <div class="card-body">
-        <div class="row no-gutters align-items-center">
-          <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-uppercase mb-1">Menu Cepat</div>
-            <div class="h5 mb-0 font-weight-bold text-dark">Perizinan</div>
-          </div>
-          <div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i></div>
-        </div>
+<!-- Content Header -->
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Dashboard Admin</h1>
+        <p class="text-muted">Kontrol data santri dan perizinan pondok</p>
       </div>
     </div>
   </div>
 </div>
 
-<div class="row mt-2">
-  <div class="col-12 mb-4">
-    <div class="card shadow-sm">
-      <div class="card-header bg-white">
-        <strong>Profil Pondok</strong>
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <!-- Small boxes (Stat box) -->
+    <div class="row">
+      <div class="col-lg-4 col-6">
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h3>Dashboard</h3>
+            <p>Menu Utama</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-tachometer-alt"></i>
+          </div>
+          <a href="<?php echo site_url('admin/dashboard'); ?>" class="small-box-footer">
+            Lihat Detail <i class="fas fa-arrow-circle-right"></i>
+          </a>
+        </div>
       </div>
-      <div class="card-body">
-        <p class="mb-2">Pondok Pesantren Mahasiswa Universitas Alma Ata</p>
-        <p class="mb-0">Pimpinan pondok: <strong>KH. Hamam Hadi</strong></p>
+      <div class="col-lg-4 col-6">
+        <div class="small-box bg-success">
+          <div class="inner">
+            <h3>Data Santri</h3>
+            <p>Kelola Santri</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <a href="<?php echo site_url('admin/santri'); ?>" class="small-box-footer">
+            Kelola Data <i class="fas fa-arrow-circle-right"></i>
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-4 col-6">
+        <div class="small-box bg-warning">
+          <div class="inner">
+            <h3>Perizinan</h3>
+            <p>Kelola Izin</p>
+          </div>
+          <div class="icon">
+            <i class="fas fa-clipboard-list"></i>
+          </div>
+          <a href="<?php echo site_url('admin/perizinan'); ?>" class="small-box-footer">
+            Kelola Izin <i class="fas fa-arrow-circle-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info boxes -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-mosque mr-1"></i>
+              Profil Pondok
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <strong><i class="fas fa-university mr-1"></i> Nama Pondok</strong>
+                <p class="text-muted">Pondok Pesantren Mahasiswa Universitas Alma Ata</p>
+              </div>
+              <div class="col-md-6">
+                <strong><i class="fas fa-user-tie mr-1"></i> Pimpinan Pondok</strong>
+                <p class="text-muted">KH. Hamam Hadi</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</section>

@@ -172,13 +172,58 @@ class Presensi_model extends CI_Model
         $tgl_mulai = $izin['tgl_mulai'];
         $tgl_selesai = $izin['tgl_selesai'];
         $sub_kat   = isset($izin['sub_kategori']) ? (string) $izin['sub_kategori'] : '';
+        $alasan = isset($izin['alasan']) ? (string) $izin['alasan'] : '';
+        $is_haid = $this->is_izin_haid($alasan);
 
-        // Tipe 1 & 2: semua 5 kegiatan selama rentang tanggal
+        // Izin haid: hanya 3 kegiatan jamaah selama rentang tanggal, apa pun tipe izinnya.
+        // Selain haid: tetap mengikuti tipe izin masing-masing.
+        if ($is_haid) {
+            $dates = $this->get_date_range($tgl_mulai, $tgl_selesai);
+            $kegiatan_list = self::KEGIATAN_JAMAAH;
+
+            foreach ($dates as $tgl) {
+                // Pertama, update existing presensi yang ada di tanggal ini menjadi izin
+                $this->db
+                    ->where('nim', $nim)
+                    ->where('tanggal', $tgl)
+                    ->where_in('kegiatan', $kegiatan_list)
+                    ->update('presensi', array(
+                        'status' => 'izin',
+                        'id_izin' => $id_izin,
+                        'presensi_at' => date('Y-m-d H:i:s')
+                    ));
+
+                // Kemudian insert presensi baru untuk kegiatan yang belum ada record
+                foreach ($kegiatan_list as $kegiatan) {
+                    $existing = $this->get_presensi($nim, $kegiatan, $tgl);
+                    if (!$existing) {
+                        $this->insert_presensi_izin($nim, $kegiatan, $tgl, $id_izin);
+                    }
+                }
+            }
+            return TRUE;
+        }
+
         if ($tipe === '1' || $tipe === '2') {
             $dates = $this->get_date_range($tgl_mulai, $tgl_selesai);
+            $kegiatan_list = array_keys(self::KEGIATAN_LIST);
+
             foreach ($dates as $tgl) {
-                foreach (array_keys(self::KEGIATAN_LIST) as $kegiatan) {
-                    $this->insert_presensi_izin($nim, $kegiatan, $tgl, $id_izin);
+                $this->db
+                    ->where('nim', $nim)
+                    ->where('tanggal', $tgl)
+                    ->where_in('kegiatan', $kegiatan_list)
+                    ->update('presensi', array(
+                        'status' => 'izin',
+                        'id_izin' => $id_izin,
+                        'presensi_at' => date('Y-m-d H:i:s')
+                    ));
+
+                foreach ($kegiatan_list as $kegiatan) {
+                    $existing = $this->get_presensi($nim, $kegiatan, $tgl);
+                    if (!$existing) {
+                        $this->insert_presensi_izin($nim, $kegiatan, $tgl, $id_izin);
+                    }
                 }
             }
             return TRUE;
@@ -187,9 +232,24 @@ class Presensi_model extends CI_Model
         // Tipe 3: hanya kegiatan yang ada di sub_kategori, pada tanggal izin
         if ($tipe === '3') {
             $sub_list = array_values(array_filter(array_map('trim', explode(',', $sub_kat)), 'strlen'));
+            // Update existing presensi menjadi izin
+            $this->db
+                ->where('nim', $nim)
+                ->where('tanggal', $tgl_mulai)
+                ->where_in('kegiatan', $sub_list)
+                ->update('presensi', array(
+                    'status' => 'izin',
+                    'id_izin' => $id_izin,
+                    'presensi_at' => date('Y-m-d H:i:s')
+                ));
+
+            // Insert presensi baru untuk yang belum ada
             foreach ($sub_list as $kegiatan) {
                 if (isset(self::KEGIATAN_LIST[$kegiatan])) {
-                    $this->insert_presensi_izin($nim, $kegiatan, $tgl_mulai, $id_izin);
+                    $existing = $this->get_presensi($nim, $kegiatan, $tgl_mulai);
+                    if (!$existing) {
+                        $this->insert_presensi_izin($nim, $kegiatan, $tgl_mulai, $id_izin);
+                    }
                 }
             }
             return TRUE;
@@ -199,24 +259,172 @@ class Presensi_model extends CI_Model
     }
 
     /**
-     * Hapus presensi izin jika izin dibatalkan/ditolak
+     * Cek bentrok presensi dengan izin yang akan diajukan
+     * Return: array dengan info bentrok jika ada
+     * 
+     * CATATAN PENTING:
+     * - Untuk tanggal hari ini dan sebelumnya (<= hari ini): Tidak dicek bentrok, akan auto-convert hadir menjadi izin
+     * - Untuk tanggal setelah hari ini (> hari ini): Dicek bentrok, jika ada hadir → error
+     * - Haid izin: Skip bentrok check sama sekali (di level create_pengajuan), langsung auto-convert
      */
-    public function hapus_presensi_izin($id_izin)
+    public function check_bentrok_presensi($nim, $tipe_izin, $tgl_mulai, $tgl_selesai, $sub_kategori = '')
     {
+        $nim = trim($nim);
+        $bentrok = array();
+        $is_haid = $this->is_izin_haid($sub_kategori);
+        $today = date('Y-m-d');
+        
+        if ($is_haid) {
+            // Izin haid: cek hanya 3 kegiatan jamaah dalam rentang tanggal.
+            // (Sebenarnya haid sudah skip di create_pengajuan, tapi jaga untuk safety)
+            $dates = $this->get_date_range($tgl_mulai, $tgl_selesai);
+            $kegiatan_list = self::KEGIATAN_JAMAAH;
+            
+            foreach ($dates as $tgl) {
+                foreach ($kegiatan_list as $kegiatan) {
+                    $existing = $this->get_presensi($nim, $kegiatan, $tgl);
+                    if ($existing && $existing['status'] === 'hadir') {
+                        $bentrok[] = array(
+                            'tanggal' => $tgl,
+                            'kegiatan' => $kegiatan,
+                            'kegiatan_label' => self::get_label_kegiatan($kegiatan),
+                            'status' => 'hadir'
+                        );
+                    }
+                }
+            }
+        } elseif ($tipe_izin === '1' || $tipe_izin === '2') {
+            // Tipe 1 & 2 non-haid: cek semua kegiatan, HANYA untuk tanggal SETELAH hari ini (> today)
+            // Tanggal hari ini dan sebelumnya akan auto-convert hadir menjadi izin saat approval
+            $dates = $this->get_date_range($tgl_mulai, $tgl_selesai);
+            $kegiatan_list = array_keys(self::KEGIATAN_LIST);
+
+            foreach ($dates as $tgl) {
+                // Hanya check untuk tanggal masa depan (setelah hari ini)
+                if ($tgl <= $today) {
+                    continue;
+                }
+                
+                foreach ($kegiatan_list as $kegiatan) {
+                    $existing = $this->get_presensi($nim, $kegiatan, $tgl);
+                    if ($existing && $existing['status'] === 'hadir') {
+                        $bentrok[] = array(
+                            'tanggal' => $tgl,
+                            'kegiatan' => $kegiatan,
+                            'kegiatan_label' => self::get_label_kegiatan($kegiatan),
+                            'status' => 'hadir'
+                        );
+                    }
+                }
+            }
+        } elseif ($tipe_izin === '3') {
+            // Tipe 3: Cek kegiatan yang dipilih pada tanggal tertentu
+            // Jika tanggal hari ini atau sebelumnya, tidak perlu cek bentrok (akan auto-convert)
+            if ($tgl_mulai <= $today) {
+                return $bentrok; // Empty array, tidak ada bentrok check untuk tanggal lalu/hari ini
+            }
+            
+            $sub_list = array_values(array_filter(array_map('trim', explode(',', $sub_kategori)), 'strlen'));
+            
+            foreach ($sub_list as $kegiatan) {
+                if (isset(self::KEGIATAN_LIST[$kegiatan])) {
+                    $existing = $this->get_presensi($nim, $kegiatan, $tgl_mulai);
+                    if ($existing && $existing['status'] === 'hadir') {
+                        $bentrok[] = array(
+                            'tanggal' => $tgl_mulai,
+                            'kegiatan' => $kegiatan,
+                            'kegiatan_label' => self::get_label_kegiatan($kegiatan),
+                            'status' => 'hadir'
+                        );
+                    }
+                }
+            }
+        }
+        
+        return $bentrok;
+    }
+
+    /**
+     * Deteksi izin haid dari alasan izin.
+     * Izin haid selalu diperlakukan sebagai skema 3 kegiatan jamaah.
+     */
+    private function is_izin_haid($alasan)
+    {
+        $alasan = strtolower(trim((string) $alasan));
+
+        if ($alasan === '') {
+            return FALSE;
+        }
+
+        return (strpos($alasan, 'haid') !== FALSE);
+    }
+
+    /**
+     * Hapus presensi izin untuk tanggal setelah batas tertentu.
+     * Tanggal <= $keep_until_date tetap dipertahankan sebagai riwayat.
+     */
+    public function hapus_presensi_izin($id_izin, $keep_until_date = null)
+    {
+        $keep_until_date = $keep_until_date ?: date('Y-m-d');
+
         return $this->db
             ->where('id_izin', $id_izin)
             ->where('status', 'izin')
+            ->where('tanggal >', $keep_until_date)
             ->delete('presensi');
     }
 
-    // -------------------------------------------------------------------------
-    // Presensi manual admin
-    // -------------------------------------------------------------------------
+    /**
+     * Cek bentrok presensi manual dengan izin yang sudah ada
+     * Return: array dengan info izin jika ada bentrok
+     */
+    public function check_bentrok_izin($nim, $kegiatan, $tanggal)
+    {
+        $nim = trim($nim);
+        
+        // Cek apakah ada presensi izin untuk kegiatan+tanggal ini
+        $existing = $this->get_presensi($nim, $kegiatan, $tanggal);
+        
+        if ($existing && $existing['status'] === 'izin' && !empty($existing['id_izin'])) {
+            // Ada presensi izin, ambil data izin dari tabel ijin
+            $izin = $this->db
+                ->select('id, tipe_izin, tgl_mulai, tgl_selesai, alasan, status, acc')
+                ->from('ijin')
+                ->where('id', $existing['id_izin'])
+                ->get()
+                ->row_array();
+                
+            if ($izin && (string)$izin['acc'] === '1') {
+                return array(
+                    'id_izin' => $izin['id'],
+                    'tipe_izin' => $izin['tipe_izin'],
+                    'tgl_mulai' => $izin['tgl_mulai'],
+                    'tgl_selesai' => $izin['tgl_selesai'],
+                    'alasan' => $izin['alasan']
+                );
+            }
+        }
+        
+        return null;
+    }
     public function admin_tambah_presensi($nim, $kegiatan, $tanggal, $status, $admin_nim, $id_izin = null)
     {
         $existing = $this->get_presensi($nim, $kegiatan, $tanggal);
         if ($existing) {
             return array('ok' => FALSE, 'message' => 'Sudah ada record presensi untuk slot ini. Gunakan edit.');
+        }
+
+        // Cek bentrok dengan izin yang sudah disetujui (hanya untuk status hadir)
+        if ($status === 'hadir') {
+            $bentrok_izin = $this->check_bentrok_izin($nim, $kegiatan, $tanggal);
+            if ($bentrok_izin) {
+                return array(
+                    'ok' => FALSE, 
+                    'bentrok' => TRUE,
+                    'data_bentrok' => $bentrok_izin,
+                    'message' => 'Ada bentrok dengan izin yang sudah disetujui untuk kegiatan ini.'
+                );
+            }
         }
 
         $ok = $this->db->insert('presensi', array(
@@ -366,42 +574,62 @@ class Presensi_model extends CI_Model
     /**
      * Preview rekap mingguan (belum disimpan)
      */
-    public function preview_rekap_minggu($minggu_mulai, $minggu_selesai, $nim = null)
+    public function preview_rekap_minggu($minggu_mulai, $minggu_selesai, $nim = null, array $filters = array())
     {
-        // Ambil semua santri aktif atau satu santri
+        // Sumber data: tabel users (role='user') sebagai master santri
         if ($nim) {
-            $santri_list = array(array('nim' => trim($nim)));
+            $query = $this->db
+                ->select('TRIM(u.nim) AS nim, m.NMMHSMSMHS AS nama, TRIM(s.kmr) AS kamar', FALSE)
+                ->from('users u')
+                ->join('sim_akademik.msmhs m', 'TRIM(m.NIMHSMSMHS) = u.nim', 'left')
+                ->join('mssantri s', 'TRIM(s.nim) = u.nim', 'left')
+                ->where('u.role', 'user')
+                ->where('u.nim', trim($nim));
         } else {
-            $santri_list = $this->db
-                ->select('TRIM(nim) AS nim', FALSE)
-                ->from('mssantri')
-                ->where('TRIM(nim) !=', '')
-                ->get()
-                ->result_array();
+            $query = $this->db
+                ->select('TRIM(u.nim) AS nim, m.NMMHSMSMHS AS nama, TRIM(s.kmr) AS kamar', FALSE)
+                ->from('users u')
+                ->join('sim_akademik.msmhs m', 'TRIM(m.NIMHSMSMHS) = u.nim', 'left')
+                ->join('mssantri s', 'TRIM(s.nim) = u.nim', 'left')
+                ->where('u.role', 'user')
+                ->where('u.nim !=', '');
+
+            if (!empty($filters['kamar'])) {
+                $query->where('TRIM(s.kmr)', trim($filters['kamar']));
+            }
         }
+
+        $santri_list = $query->get()->result_array();
 
         $result = array();
         foreach ($santri_list as $s) {
             $n = trim($s['nim']);
 
-            $alpha = $this->hitung_alpha($n, $minggu_mulai, $minggu_selesai);
-
-            // Ambil kartu minggu sebelumnya
+            $alpha      = $this->hitung_alpha($n, $minggu_mulai, $minggu_selesai);
             $kartu_lalu = $this->get_kartu_minggu_sebelumnya($n, $minggu_mulai);
-
-            $kartu = $this->hitung_kartu(
+            $kartu      = $this->hitung_kartu(
                 $alpha['alpha_jamaah'],
                 $alpha['alpha_ngaji'],
                 $kartu_lalu ? $kartu_lalu['kartu_jamaah'] : 'putih',
                 $kartu_lalu ? $kartu_lalu['kartu_ngaji']  : 'putih'
             );
 
+            // Terapkan filter kartu setelah dihitung
+            if (!empty($filters['kartu_jamaah']) && $kartu['kartu_jamaah'] !== $filters['kartu_jamaah']) {
+                continue;
+            }
+            if (!empty($filters['kartu_ngaji']) && $kartu['kartu_ngaji'] !== $filters['kartu_ngaji']) {
+                continue;
+            }
+
             $result[] = array(
-                'nim'           => $n,
-                'alpha_jamaah'  => $alpha['alpha_jamaah'],
-                'alpha_ngaji'   => $alpha['alpha_ngaji'],
-                'kartu_jamaah'  => $kartu['kartu_jamaah'],
-                'kartu_ngaji'   => $kartu['kartu_ngaji'],
+                'nim'               => $n,
+                'nama'              => $s['nama'] ?? 'N/A',
+                'kamar'             => $s['kamar'] ?? '-',
+                'alpha_jamaah'      => $alpha['alpha_jamaah'],
+                'alpha_ngaji'       => $alpha['alpha_ngaji'],
+                'kartu_jamaah'      => $kartu['kartu_jamaah'],
+                'kartu_ngaji'       => $kartu['kartu_ngaji'],
                 'kartu_jamaah_lalu' => $kartu_lalu ? $kartu_lalu['kartu_jamaah'] : 'putih',
                 'kartu_ngaji_lalu'  => $kartu_lalu ? $kartu_lalu['kartu_ngaji']  : 'putih',
             );
@@ -537,6 +765,7 @@ class Presensi_model extends CI_Model
     {
         $this->db->select('k.nim, k.alpha_jamaah, k.alpha_ngaji, k.kartu_jamaah, k.kartu_ngaji, k.is_final, m.NMMHSMSMHS AS nama, s.kmr AS kamar');
         $this->db->from('presensi_kartu k');
+        $this->db->join('users u', 'u.nim = k.nim AND u.role = \'user\'', 'inner');
         $this->db->join('sim_akademik.msmhs m', 'TRIM(m.NIMHSMSMHS) = k.nim', 'left');
         $this->db->join('mssantri s', 'TRIM(s.nim) = k.nim', 'left');
         $this->db->where('k.minggu_mulai', $minggu_mulai);
@@ -563,22 +792,25 @@ class Presensi_model extends CI_Model
     // -------------------------------------------------------------------------
     public static function get_minggu_aktif($tanggal = null)
     {
-        $ts = $tanggal ? strtotime($tanggal) : time();
-        $current_hour = (int) date('H', $ts);
-        $dow = (int) date('w', $ts); // 0=Minggu, 6=Sabtu
-        
-        // Jika hari Minggu dan jam < 04:00, maka masih minggu sebelumnya
-        if ($dow === 0 && $current_hour < 4) {
-            $ts = strtotime('-1 week', $ts);
-            $dow = (int) date('w', $ts);
+        if ($tanggal) {
+            // Input dari form: pakai tanggal saja tanpa logika jam
+            $ts  = strtotime($tanggal);
+            $dow = (int) date('w', $ts); // 0=Minggu, 6=Sabtu
+        } else {
+            // Real-time: pakai jam sekarang
+            $ts           = time();
+            $current_hour = (int) date('H', $ts);
+            $dow          = (int) date('w', $ts);
+            // Jika hari Minggu dan jam < 04:00, masih periode minggu lalu
+            if ($dow === 0 && $current_hour < 4) {
+                $ts  = strtotime('-1 week', $ts);
+                $dow = (int) date('w', $ts);
+            }
         }
-        
-        // Hitung hari Minggu (mulai periode)
+
         $minggu = date('Y-m-d', strtotime('-' . $dow . ' days', $ts));
-        
-        // Hitung hari Sabtu (akhir periode)
-        $sabtu = date('Y-m-d', strtotime('+' . (6 - $dow) . ' days', $ts));
-        
+        $sabtu  = date('Y-m-d', strtotime('+' . (6 - $dow) . ' days', $ts));
+
         return array('mulai' => $minggu, 'selesai' => $sabtu);
     }
 

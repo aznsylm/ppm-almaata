@@ -128,10 +128,12 @@ class Perizinan_model extends CI_Model
     public function get_kamar_list()
     {
         $rows = $this->db
-            ->select('DISTINCT TRIM(kmr) AS kamar', FALSE)
-            ->from('mssantri')
-            ->where('kmr IS NOT NULL', NULL, FALSE)
-            ->where('TRIM(kmr) !=', '')
+            ->select('DISTINCT TRIM(s.kmr) AS kamar', FALSE)
+            ->from('users u')
+            ->join('mssantri s', 'TRIM(s.nim) = u.nim', 'inner')
+            ->where('u.role', 'user')
+            ->where('s.kmr IS NOT NULL', NULL, FALSE)
+            ->where('TRIM(s.kmr) !=', '')
             ->order_by('kamar', 'ASC')
             ->get()
             ->result_array();
@@ -231,6 +233,31 @@ class Perizinan_model extends CI_Model
         $alasan   = $this->normalize_multi_value(isset($data['alasan']) ? $data['alasan'] : '');
         $sub_kat  = $this->normalize_multi_value(isset($data['sub_kategori']) ? $data['sub_kategori'] : '');
 
+        // Cek bentrok dengan presensi yang sudah ada
+        $this->load->model('Presensi_model');
+        // Skip bentrok check untuk izin haid (akan auto-convert status presensi jadi izin)
+        $is_haid = strtolower($alasan) !== '' && strpos(strtolower($alasan), 'haid') !== FALSE;
+
+        if (!$is_haid) {
+            // Hanya cek bentrok untuk izin NON-HAID
+            $bentrok = $this->Presensi_model->check_bentrok_presensi(
+                $nim, 
+                $tipe, 
+                $data['tgl_mulai'], 
+                isset($data['tgl_selesai']) ? $data['tgl_selesai'] : $data['tgl_mulai'],
+                $alasan
+            );
+            
+            if (!empty($bentrok)) {
+                return array(
+                    'ok' => FALSE, 
+                    'bentrok' => TRUE,
+                    'data_bentrok' => $bentrok,
+                    'message' => 'Ada bentrok dengan presensi hadir yang sudah tercatat.'
+                );
+            }
+        }
+
         $payload = array(
             'id'             => $id,
             'nim'            => $nim,
@@ -250,7 +277,7 @@ class Perizinan_model extends CI_Model
 
         $ok = $this->db->insert('ijin', $payload);
         if (!$ok) {
-            return FALSE;
+            return array('ok' => FALSE, 'message' => 'Gagal menyimpan pengajuan izin.');
         }
 
         // Insert detail dates hanya untuk tipe 1 & 2
@@ -258,7 +285,7 @@ class Perizinan_model extends CI_Model
             $this->insert_detail_dates($id, $nim, $data['tgl_mulai'], $payload['tgl_selesai']);
         }
 
-        return $id;
+        return array('ok' => TRUE, 'id' => $id);
     }
 
     // -------------------------------------------------------------------------
@@ -444,10 +471,16 @@ class Perizinan_model extends CI_Model
                 'approval_note' => $note !== null ? trim((string) $note) : null,
             ));
 
-        // AUTO-INSERT PRESENSI IZIN ketika izin disetujui (decision='3')
-        if ($ok && $decision === '3') {
+        if ($ok) {
             $this->load->model('Presensi_model');
-            $this->Presensi_model->proses_izin_approved($id);
+            
+            if ($decision === '3') {
+                // APPROVE: Auto-insert presensi izin
+                $this->Presensi_model->proses_izin_approved($id);
+            } else {
+                // REJECT: Hapus presensi izin masa depan yang mungkin sudah ada
+                $this->Presensi_model->hapus_presensi_izin($id, date('Y-m-d'));
+            }
         }
 
         return $ok;
@@ -535,6 +568,10 @@ class Perizinan_model extends CI_Model
         $upload_dir = FCPATH . 'uploads/perizinan/';
 
         $this->db->trans_begin();
+        $this->load->model('Presensi_model');
+        foreach ($rows as $row) {
+            $this->Presensi_model->hapus_presensi_izin($row['id'], date('Y-m-d'));
+        }
         $this->db->where_in('id', $id_list)->delete('ijindetail');
         $this->db->where_in('id', $id_list)->delete('ijin');
 
@@ -644,6 +681,10 @@ class Perizinan_model extends CI_Model
         $upload_dir = FCPATH . 'uploads/perizinan/';
 
         $this->db->trans_begin();
+        $this->load->model('Presensi_model');
+        foreach ($ids as $row) {
+            $this->Presensi_model->hapus_presensi_izin($row['id'], date('Y-m-d'));
+        }
         $this->db->where_in('id', $id_list)->delete('ijindetail');
         $this->db->where_in('id', $id_list)->delete('ijin');
 
@@ -689,6 +730,10 @@ class Perizinan_model extends CI_Model
         $upload_dir = FCPATH . 'uploads/perizinan/';
 
         $this->db->trans_begin();
+        $this->load->model('Presensi_model');
+        foreach ($rows as $row) {
+            $this->Presensi_model->hapus_presensi_izin($row['id'], date('Y-m-d'));
+        }
         $this->db->where_in('id', $ids)->delete('ijindetail');
         $this->db->where_in('id', $ids)->delete('ijin');
 
@@ -738,6 +783,19 @@ class Perizinan_model extends CI_Model
         }
 
         $ok = $this->db->where('id', $id)->update('ijin', $payload);
+        
+        if ($ok) {
+            $this->load->model('Presensi_model');
+            
+            if ($suspend) {
+                // SUSPEND: Hapus presensi izin masa depan, riwayat sampai hari ini tetap ada
+                $this->Presensi_model->hapus_presensi_izin($id, date('Y-m-d'));
+            } else {
+                // RESUME: Insert kembali presensi izin
+                $this->Presensi_model->proses_izin_approved($id);
+            }
+        }
+        
         return $ok
             ? array('ok' => TRUE, 'message' => $suspend ? 'Izin berhasil diselesaikan sementara.' : 'Izin berhasil dilanjutkan.')
             : array('ok' => FALSE, 'message' => 'Gagal memperbarui status izin.');
